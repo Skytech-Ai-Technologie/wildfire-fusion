@@ -14,8 +14,9 @@ echo [run_Platform]   contextual : entropy-gated transformer    (runs\contextual
 echo [run_Platform]   decisional : Dempster-Shafer fusion + alarm
 echo.
 echo [run_Platform] input sources (also switchable live from the UI):
-echo [run_Platform]   PC camera    default, device 0   --camera N
-echo [run_Platform]   video file   --source file --path clip.mp4
+echo [run_Platform]   local camera  default, device 0   --camera N
+echo [run_Platform]   RTSP/IP/PTZ   --source file --path "rtsp://host:554/stream"
+echo [run_Platform]   video file    --source file --path clip.mp4
 echo [run_Platform]   YouTube      --source youtube --youtube "https://youtu.be/XXXX"
 echo [run_Platform]   test pattern --source synthetic
 echo.

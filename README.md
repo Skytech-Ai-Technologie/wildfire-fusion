@@ -18,10 +18,13 @@ Benchmarks: **FLAME** (aerial RGB+LWIR), **D-Fire** (ground RGB), **FIgLib** (fi
 > playground** (same math as `src/decisional/evidential_fusion.py`), and an entropy-gate
 > heatmap for eq. (3). To serve it instead: `python -m http.server 8123 --directory docs`.
 
-> **Live platform (your PC camera + the trained model):** `run_Platform.bat` — or
+> **Live platform (live video feed + the trained model):** `run_Platform.bat` — or
 > `python scripts\run_platform.py` — starts a local web app that runs the real
-> dual-stream detector on your webcam and shows the fused decision live.
-> See [§7](#7-live-platform--run-the-trained-model-on-your-pc-camera).
+> dual-stream detector on a live video feed and shows the fused decision live.
+> The sensing layer is source-agnostic: a local capture device, an IP/**RTSP**
+> network camera (**PTZ** included), a video file, or a YouTube URL all attach
+> without touching the pipeline.
+> See [§7](#7-live-platform--run-the-trained-model-on-a-live-video-feed).
 
 ---
 
@@ -269,12 +272,17 @@ Every one of these is also flagged inline in code/config with `ASSUMPTION`.
 
 ---
 
-## 7. Live platform — run the trained model on your PC camera
+## 7. Live platform — run the trained model on a live video feed
 
-A local web app that runs the **actual trained pipeline** on a live camera feed:
+A local web app that runs the **actual trained pipeline** on a live video feed:
 dual-stream YOLOv8n+CBAM detects, the entropy-gated transformer refines the
 confidence, Dempster–Shafer fusion decides, and the browser shows the annotated
 video next to the live fusion telemetry.
+
+The sensing layer is source-agnostic — anything OpenCV/FFmpeg can open attaches
+without modifying the pipeline: a **local capture device** (built-in or USB), an
+**IP/RTSP network camera, including PTZ units**, a recorded video file, a
+YouTube URL, or a synthetic test pattern for a machine with no camera at all.
 
 ```bat
 :: the one-liner (Windows)
@@ -291,7 +299,7 @@ Then open **http://127.0.0.1:8080**.
 
 | Layer | Component | Source |
 |---|---|---|
-| Sensing | OpenCV capture (webcam / video file / YouTube / synthetic pattern) | `src/platform/camera.py` |
+| Sensing | OpenCV capture (local device / IP-RTSP / PTZ / video file / YouTube / synthetic) | `src/platform/camera.py` |
 | Perceptual | dual-stream YOLOv8n+CBAM, or a single-stream checkpoint | `src/platform/engine.py` |
 | Contextual | trained entropy-gated transformer over a rolling 32-frame window | `src/platform/pipeline.py` |
 | Decisional | conflict-aware DS fusion, τ, hysteresis, MQTT publish | `src/pipeline/fusion_loop.py` (unmodified) |
@@ -309,7 +317,8 @@ fusion loop and the server keep running; only the frame source is swapped.
 
 | Source | How |
 |---|---|
-| **PC camera** | pick the device index (auto-detected) and press *Use this camera* |
+| **Local camera device** | pick the device index (auto-detected) and press *Use this camera* |
+| **RTSP / IP / PTZ camera** | paste the stream URL (`rtsp://host:554/stream`, ONVIF/PTZ units included) in the video-path box — any stream OpenCV/FFmpeg can open |
 | **Video file** | pick an MP4 from the dropdown, or type an absolute path, or drag a file onto the live view |
 | **YouTube** | paste a URL — yt-dlp resolves it and the clip is streamed straight into OpenCV |
 | **Test pattern** | an animated synthetic plume, for a machine with no camera |
@@ -347,7 +356,7 @@ python scripts\run_platform.py --mqtt-host 192.168.1.10     :: publish alarms ov
 
 ### Read the telemetry correctly
 
-- **The LWIR half is a proxy.** A PC webcam has no thermal sensor, so the dual-stream
+- **The LWIR half is a proxy.** A plain RGB camera has no thermal sensor, so the dual-stream
   model's LWIR channels are filled with the grayscale proxy of the RGB frame — the same
   documented placeholder the training path uses on RGB-only datasets. The thermal
   modality carries no independent information here.

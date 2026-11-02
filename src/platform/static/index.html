@@ -27,7 +27,7 @@
     <h1>Real-time fire &amp; smoke detection</h1>
     <p class="lead">The trained four-layer pipeline — dual-stream YOLOv8n+CBAM (perceptual) →
       entropy-gated transformer (contextual) → conflict-aware Dempster–Shafer fusion (decisional) —
-      running live on your PC camera.</p>
+      running live on the incoming video feed.</p>
   </section>
 
   <section class="grid">
@@ -124,7 +124,7 @@
 
         <div class="tab-body on" data-body="camera">
           <label class="ctl">
-            <span>PC camera device</span>
+            <span>Camera device</span>
             <select id="src-camera"></select>
           </label>
           <p class="muted" id="camera-note">detecting devices…</p>
@@ -177,7 +177,7 @@
     <div class="note-grid">
       <div class="note">
         <h3>The LWIR half is a proxy</h3>
-        <p>A PC webcam has no thermal sensor. The dual-stream model needs 6 channels
+        <p>A plain RGB camera has no thermal sensor. The dual-stream model needs 6 channels
           (RGB + LWIR), so the LWIR half is filled with the <b>grayscale proxy of the
           RGB frame</b> — the same documented placeholder the training path uses on
           RGB-only datasets. It is not thermal data, and the thermal modality carries

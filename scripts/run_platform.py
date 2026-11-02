@@ -1,10 +1,13 @@
-"""Launch the live platform: trained model + your PC camera + a browser UI.
+"""Launch the live platform: trained model + a live video feed + a browser UI.
 
-    python scripts/run_platform.py                       # PC camera (device 0)
+    python scripts/run_platform.py                       # local camera (device 0)
     python scripts/run_platform.py --camera 1            # another device
     python scripts/run_platform.py --list-cameras        # probe available devices
     python scripts/run_platform.py --source synthetic    # no camera needed
     python scripts/run_platform.py --source file --path clip.mp4
+    python scripts/run_platform.py --source file --path "rtsp://host:554/stream"
+                                         # IP / RTSP / PTZ camera streams work too —
+                                         # any URL OpenCV/FFmpeg can open
 
 Model selection is automatic: the newest runs/dual_*/best.pt (dual-stream
 YOLOv8n+CBAM) is preferred, falling back to the newest runs/single_*/weights/best.pt.

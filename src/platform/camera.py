@@ -3,9 +3,12 @@
 Sources, all exposing the same `read()` contract and all swappable at runtime
 through `SourceManager`:
 
-  * "camera"   — the PC webcam through OpenCV (DirectShow first on Windows, because
-                 the MSMF backend often opens the wrong device or blocks for seconds)
-  * "file"     — a local video file (mp4 / avi / mov / mkv / webm) replayed in a loop
+  * "camera"   — a local capture device (built-in or USB) through OpenCV (DirectShow
+                 first on Windows, because the MSMF backend often opens the wrong
+                 device or blocks for seconds)
+  * "file"     — a local video file (mp4 / avi / mov / mkv / webm) replayed in a loop;
+                 also any URL OpenCV/FFmpeg can open, e.g. an RTSP / IP / PTZ camera
+                 stream passed as the path
   * "youtube"  — a YouTube URL, resolved with yt-dlp: the direct media URL is
                  streamed straight into OpenCV, and if that fails the video is
                  downloaded into the media folder and played from disk
@@ -125,7 +128,7 @@ class FrameSource:
 
 
 class CameraSource(FrameSource):
-    """PC webcam capture."""
+    """Local capture device (built-in or USB camera)."""
 
     def __init__(self, index=0, width=640, height=480, fps=30, backend="auto"):
         super().__init__(width=width, height=height, fps=fps, name=f"camera{index}")
@@ -545,8 +548,8 @@ def probe_cameras(max_index=6, per_index_timeout=1.5, skip=()):
     """Try to open device indices 0..max_index-1 and report which ones work.
 
     Used by `run_platform.py --list-cameras` and by the UI's device picker so the
-    user can pick the right index for their PC (Windows often has the built-in
-    webcam at 0 and an external USB camera at 1 or 2).
+    user can pick the right device index (Windows often has the built-in
+    camera at 0 and an external USB camera at 1 or 2).
 
     Each index is probed under a hard timeout — a missing device must not stall
     the caller for a minute. Indices in `skip` are left alone: they are in use by
