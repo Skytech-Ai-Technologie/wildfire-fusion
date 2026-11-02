@@ -28,6 +28,23 @@ Benchmarks: **FLAME** (aerial RGB+LWIR), **D-Fire** (ground RGB), **FIgLib** (fi
 
 ---
 
+## Results at a glance
+
+| | |
+|:---:|:---:|
+| **Architecture — three tiers, four layers** | **Training curves** |
+| ![Architecture](postdo/architecture.png) | ![Training curves](postdo/training_curves.png) |
+| **Test-split detections (D-Fire)** | **Operating-point analysis** |
+| ![Sample batch predictions](postdo/sample_batch_predictions.png) | ![Threshold tradeoff](postdo/threshold_tradeoff.png) |
+| **Confusion matrix (normalized, test)** | **Precision–recall** |
+| ![Confusion matrix](postdo/confusion_matrix_normalized_TEST.png) | ![PR curve](postdo/precision_recall_curve.png) |
+
+Full-size figures, the false-positive gallery, per-class metrics and the LaTeX results
+table are in [`postdo/`](postdo/); result CSVs (Tables IV/V/VI, ablation, field-sim
+timeline) and raw latency traces are in [`results/`](results/).
+
+---
+
 ## 0. Run everything from the repo root
 
 All commands below assume you are at the repo root:
