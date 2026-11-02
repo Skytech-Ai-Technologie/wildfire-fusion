@@ -1,0 +1,7 @@
+D-Fire test split — box-level, YOLOv8n single-stream RGB (best.pt)
+images: 3264  instances: 3990
+
+smoke  P=0.786 R=0.720 F1=0.752 AP50=0.777 AP50-95=0.453
+fire   P=0.699 R=0.572 F1=0.629 AP50=0.649 AP50-95=0.326
+
+all    P=0.743 R=0.646 mAP50=0.714 mAP50-95=0.389

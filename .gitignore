@@ -1,0 +1,28 @@
+# --- Datasets: NOT shipped (see DATASETS.md; fetch with scripts/get_datasets.py) ---
+data/
+
+# --- Training runs / checkpoints: regenerate by training (README §2.3) ---
+runs/
+*.pt
+*.engine
+*.onnx
+*.npz
+
+# --- Environments & caches ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+Ultralytics/
+
+# --- Local media (uploaded/downloaded videos); keep only the placeholder README ---
+media/*
+!media/README.txt
+
+# --- Redundant archives & dev scratch scripts ---
+*.zip
+_t6.py
+_t7.py
+_cam_probe.jpg
+.zcodeignore

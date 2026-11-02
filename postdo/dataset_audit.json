@@ -1,0 +1,39 @@
+{
+  "dfire": {
+    "images_total": 21527,
+    "images_per_split": {
+      "test": 3264,
+      "train": 15063,
+      "val": 3200
+    },
+    "frame_labels_per_class": {
+      "none": 9838,
+      "fire": 5822,
+      "smoke": 5867
+    },
+    "box_instances": {
+      "smoke": 11865,
+      "fire": 14692
+    },
+    "box_instances_match_published_counts": true,
+    "event_groups": 673,
+    "leakage_control": "32-frame numeric-stem buckets; zero group straddling verified after regeneration"
+  },
+  "figlib": {
+    "sequences": 10,
+    "images": 732,
+    "labels": "none (fire sequences; negatives from official CV splits)"
+  },
+  "flame3_cv_subset": {
+    "images": 2214,
+    "classes": {
+      "fire": 1866,
+      "none": 348
+    },
+    "modalities": [
+      "RGB",
+      "thermal"
+    ]
+  },
+  "provenance": "data/<name>/.done markers (timestamp + source URL + file count)"
+}

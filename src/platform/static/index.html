@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORFIRE-AI — Live Wildfire Detection Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- loaded non-blockingly: a slow or unreachable font CDN must never delay the
+     live view from starting -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap"
+      media="print" onload="this.media='all'">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <b>FORFIRE-AI</b>
+  <span>Live Wildfire Detection Platform</span>
+  <span class="grow"></span>
+  <span class="pill" id="pill-conn">connecting…</span>
+</header>
+
+<main class="wrap">
+
+  <section class="head">
+    <h1>Real-time fire &amp; smoke detection</h1>
+    <p class="lead">The trained four-layer pipeline — dual-stream YOLOv8n+CBAM (perceptual) →
+      entropy-gated transformer (contextual) → conflict-aware Dempster–Shafer fusion (decisional) —
+      running live on your PC camera.</p>
+  </section>
+
+  <section class="grid">
+
+    <!-- ============ live view ============ -->
+    <div class="card video-card">
+      <div class="card-head">
+        <h2>Live view</h2>
+        <span class="chip" id="chip-source">—</span>
+      </div>
+      <div class="viewport">
+        <!-- the src is set from app.js: a never-ending multipart response would
+             otherwise block the page's load event forever -->
+        <img id="video" alt="live camera stream">
+        <div class="state-badge" id="state-badge"><span id="state-text">IDLE</span></div>
+        <div class="latency-chip" id="latency-chip">—</div>
+        <div class="drop-hint" id="drop-hint">drop a video to add it</div>
+      </div>
+      <div class="video-foot">
+        <span class="muted" id="model-info">loading model info…</span>
+      </div>
+    </div>
+
+    <!-- ============ telemetry ============ -->
+    <div class="card telemetry-card">
+      <div class="card-head">
+        <h2>Decisional telemetry</h2>
+        <span class="chip" id="chip-policy">auto</span>
+      </div>
+
+      <div class="gauge">
+        <div class="gauge-head">
+          <span>Fused fire mass&nbsp; <b>m(F)</b></span>
+          <span class="mono" id="mass-f">0.000</span>
+        </div>
+        <div class="bar">
+          <div class="bar-fill" id="bar-mass"></div>
+          <div class="bar-tau" id="bar-tau" title="alarm threshold τ"></div>
+        </div>
+        <div class="gauge-foot muted">
+          <span>0.00</span>
+          <span>alarm when m(F) &gt; τ (<b id="tau-label">0.78</b>)</span>
+          <span>1.00</span>
+        </div>
+      </div>
+
+      <table class="masses">
+        <tr><td>m(F) — supports fire</td><td class="mono" id="m-F">0.000</td></tr>
+        <tr><td>m(¬F) — supports no fire</td><td class="mono" id="m-notF">0.000</td></tr>
+        <tr><td>m(Θ) — ignorance</td><td class="mono" id="m-Theta">1.000</td></tr>
+        <tr><td>pairwise divergence</td><td class="mono" id="m-div">—</td></tr>
+      </table>
+
+      <h3>Modalities</h3>
+      <div id="modalities" class="modalities">
+        <p class="muted">no frame processed yet</p>
+      </div>
+
+      <h3>Controls</h3>
+      <div class="controls">
+        <div class="btn-row">
+          <button id="btn-toggle" class="btn primary">Start</button>
+          <button id="btn-clear" class="btn">Clear alarm</button>
+        </div>
+
+        <label class="ctl">
+          <span>Alarm threshold τ <b class="mono" id="tau-val">0.78</b></span>
+          <input type="range" id="tau" min="0.05" max="0.99" step="0.01" value="0.78">
+        </label>
+
+        <label class="ctl">
+          <span>Detection confidence <b class="mono" id="conf-val">0.25</b></span>
+          <input type="range" id="conf" min="0.05" max="0.90" step="0.01" value="0.25">
+        </label>
+
+        <label class="ctl">
+          <span>Fusion policy</span>
+          <select id="policy">
+            <option value="auto">auto — conflict-aware (paper)</option>
+            <option value="weighted">weighted average (ablation)</option>
+            <option value="dempster">Dempster only (ablation)</option>
+          </select>
+        </label>
+      </div>
+
+      <h3>Input source</h3>
+      <div class="source-picker">
+        <div class="tabs" role="tablist">
+          <button class="tab on" data-tab="camera">Camera</button>
+          <button class="tab" data-tab="file">Video file</button>
+          <button class="tab" data-tab="youtube">YouTube</button>
+          <button class="tab" data-tab="synthetic">Test pattern</button>
+        </div>
+
+        <div class="tab-body on" data-body="camera">
+          <label class="ctl">
+            <span>PC camera device</span>
+            <select id="src-camera"></select>
+          </label>
+          <p class="muted" id="camera-note">detecting devices…</p>
+          <div class="btn-row">
+            <button class="btn primary go" data-go="camera">Use this camera</button>
+            <button class="btn" id="btn-rescan">Rescan devices</button>
+          </div>
+        </div>
+
+        <div class="tab-body" data-body="file">
+          <label class="ctl">
+            <span>Video file (mp4 / avi / mov / mkv)</span>
+            <select id="src-file"></select>
+          </label>
+          <label class="ctl">
+            <span>…or an absolute path on this machine</span>
+            <input type="text" id="src-file-path" placeholder="C:\videos\fire.mp4">
+          </label>
+          <button class="btn primary go" data-go="file">Play this file</button>
+          <p class="muted" id="file-note"></p>
+        </div>
+
+        <div class="tab-body" data-body="youtube">
+          <label class="ctl">
+            <span>YouTube URL</span>
+            <input type="text" id="src-youtube" placeholder="https://www.youtube.com/watch?v=…">
+          </label>
+          <button class="btn primary go" data-go="youtube">Play this video</button>
+          <p class="muted" id="youtube-note"></p>
+        </div>
+
+        <div class="tab-body" data-body="synthetic">
+          <p class="muted">An animated smoke-and-fire pattern — useful when no camera
+            is attached. The frames are SYNTHETIC.</p>
+          <button class="btn primary go" data-go="synthetic">Use the test pattern</button>
+        </div>
+
+        <div class="upload-box">
+          <input type="file" id="file-input" accept="video/*" hidden>
+          <button class="btn" id="btn-upload">+ Add a video file</button>
+          <span class="muted" id="upload-note">or drop one onto the live view</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ notes ============ -->
+  <section class="notes">
+    <h2>Read this before you trust a number</h2>
+    <div class="note-grid">
+      <div class="note">
+        <h3>The LWIR half is a proxy</h3>
+        <p>A PC webcam has no thermal sensor. The dual-stream model needs 6 channels
+          (RGB + LWIR), so the LWIR half is filled with the <b>grayscale proxy of the
+          RGB frame</b> — the same documented placeholder the training path uses on
+          RGB-only datasets. It is not thermal data, and the thermal modality carries
+          no independent information here.</p>
+      </div>
+      <div class="note">
+        <h3>One camera caps the fused mass</h3>
+        <p>With a single modality the Dempster–Shafer mass is
+          <span class="mono">m(F) = r·π̂ ≤ r</span>, and r<sub>c</sub> = 0.80 by default.
+          So <b>τ must sit below 0.80</b> for the alarm to be reachable at all — that is
+          the framework behaving correctly, not a bug. A second camera or the simulated
+          IIoT node gives a richer (and lower-banded) mass.</p>
+      </div>
+      <div class="note">
+        <h3>τ = 0.78 is the paper's number</h3>
+        <p>It was calibrated for FPR &lt; 2% on the authors' own validation set. Your
+          camera, scene and class priors differ, so recalibrate on your data
+          (<span class="mono">src/calibrate_decisional.py</span>) before treating an
+          alarm as a detection claim.</p>
+      </div>
+      <div class="note">
+        <h3>Latency and rate</h3>
+        <p>The loop runs at the capture rate you set. CPU inference is the bottleneck
+          on a laptop; the readout shows the real measured latency and FPS so you can
+          see what your machine actually sustains.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span class="muted">wildfire-fusion · live platform · perceptual = dual-stream YOLOv8n+CBAM,
+      contextual = entropy-gated transformer, decisional = Dempster–Shafer fusion</span>
+  </footer>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORFIRE-AI — Multimodal Wildfire Early-Warning System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#0066cc; --blue-dark:#1061a6; --band:#1373ba; --band-deep:#0d4f8b;
+    --green:#008055; --lime:#8dc63f; --red:#cc334d; --amber:#995c00;
+    --text:#1a1a1a; --dim:#5d7083;
+    --bg:#ffffff; --bg-soft:#f5f7fa; --line:#d8d9da; --line-blue:#c9def0;
+    --pastel-green:#e8f3da; --pastel-orange:#fdeada; --pastel-purple:#ece4f7; --pastel-blue:#e3eef9;
+    --sans:'Titillium Web','Segoe UI',Tahoma,Geneva,sans-serif;
+    --mono:Consolas,'Cascadia Code',Menlo,monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg); color:var(--text); font:16px/1.6 var(--sans)}
+  html[dir=rtl] body{font-family:Tahoma,'Segoe UI',var(--sans)}
+  ::selection{background:var(--blue); color:#fff}
+
+  /* ---------- top bar + nav ---------- */
+  .topbar{background:var(--band); color:#fff; font-size:.8rem; padding:5px 18px;
+    display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+  .topbar b{font-weight:700}
+  .topbar .tb-right{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .langs{display:flex; gap:4px}
+  .langs button{background:transparent; color:#dbeafd; border:1px solid rgba(255,255,255,.4);
+    border-radius:6px; padding:2px 10px; cursor:pointer; font:600 .78rem var(--sans)}
+  .langs button:hover{background:rgba(255,255,255,.15); color:#fff}
+  .langs button.on{background:#fff; color:var(--band-deep); border-color:#fff; font-weight:800}
+  .brandbar{display:flex; align-items:center; gap:16px; padding:14px 18px; flex-wrap:wrap}
+  .brandbar .logo{font-weight:900; font-size:1.5rem; color:var(--green); letter-spacing:.02em; white-space:nowrap}
+  .brandbar .logo span{color:var(--band)}
+  .brandbar .strap{color:var(--dim); font-size:.85rem; max-width:640px; line-height:1.35}
+  nav{position:sticky; top:0; z-index:50; background:#cfe0ed; border-bottom:1px solid var(--line);
+    display:flex; gap:2px; align-items:center; padding:0 12px; flex-wrap:wrap}
+  nav a{color:var(--blue-dark); text-decoration:none; padding:10px 13px; font-weight:600; font-size:.9rem;
+    border-bottom:3px solid transparent}
+  nav a:hover{color:var(--band-deep); border-bottom-color:var(--band)}
+
+  .wrap{max-width:1080px; margin:0 auto; padding:0 20px}
+  section{padding:52px 0; border-top:1px solid var(--line)}
+  section.alt{background:var(--bg-soft)}
+  h2{font-size:1.7rem; color:var(--blue-dark); margin-bottom:6px; font-weight:700}
+  h2 .tick{color:var(--green)}
+  p.lead{color:var(--dim); max-width:880px; margin-bottom:24px}
+  code{font-family:var(--mono); background:var(--pastel-blue); padding:1px 6px; border-radius:4px;
+    font-size:.86em; color:#0b5394}
+  pre{background:#f7f9fc; border:1px solid var(--line-blue); border-radius:10px; padding:14px 16px;
+    overflow-x:auto; font-family:var(--mono); font-size:.82rem; line-height:1.55; color:#24384c;
+    direction:ltr; text-align:left}
+  pre .c{color:#7a8ba0}
+  .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:18px}
+  .grid{display:grid; gap:14px}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .tag{display:inline-block; font-size:.72rem; padding:2px 9px; border-radius:99px;
+    border:1px solid var(--line-blue); color:var(--blue-dark); margin:2px 4px 2px 0; background:var(--pastel-blue)}
+  .tag.fire{color:var(--red); border-color:#f0c7ce; background:#fbeaee}
+  .tag.green{color:var(--green); border-color:#bfe3d4; background:#e6f4ef}
+  .pill-ok{color:var(--green); font-weight:600}
+
+  /* ---------- hero ---------- */
+  .band{background:var(--band); color:#fff; padding:46px 0 50px}
+  .band h1{font-size:clamp(2rem,5vw,3.2rem); font-weight:900; letter-spacing:.01em}
+  .band p.sub{max-width:880px; margin-top:12px; font-size:1.05rem; color:#eaf3fb}
+  .band .en{margin-top:10px; color:#c9def0; font-size:.95rem; max-width:880px}
+  .contrib{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:26px}
+  .contrib .card{border:0; border-radius:12px}
+  .contrib .card b{font-size:1.02rem}
+  .contrib .card p{color:var(--dim); font-size:.9rem; margin-top:6px}
+  .c-green{background:var(--pastel-green)} .c-green b{color:var(--green)}
+  .c-orange{background:var(--pastel-orange)} .c-orange b{color:var(--amber)}
+  .c-purple{background:var(--pastel-purple)} .c-purple b{color:#6b3fa0}
+  .c-blue{background:var(--pastel-blue)} .c-blue b{color:var(--band)}
+
+  /* ---------- architecture ---------- */
+  .tiers{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:8px}
+  @media(max-width:900px){.tiers{grid-template-columns:repeat(2,1fr)}}
+  .tier{background:#fff; border:1px solid var(--line); border-top:4px solid var(--band); border-radius:12px;
+    padding:14px; cursor:pointer; transition:.18s}
+  .tier:hover,.tier.sel{border-color:var(--blue); box-shadow:0 6px 18px rgba(0,102,204,.12); transform:translateY(-3px)}
+  .tier h3{font-size:1rem; color:var(--blue-dark); margin-bottom:2px}
+  .tier .k{font-size:.72rem; color:var(--green); text-transform:uppercase; letter-spacing:.08em; font-weight:700}
+  .tier ul{margin:10px 0 0 16px; font-size:.82rem; color:var(--dim)}
+  html[dir=rtl] .tier ul{margin:10px 16px 0 0}
+  .tier ul li{margin:3px 0}
+  .tier ul li b{color:var(--text); font-weight:600}
+  .flow{display:flex; align-items:center; justify-content:center; margin:18px auto 4px; color:var(--dim);
+    font-size:.8rem; flex-wrap:wrap; background:var(--bg-soft); border-radius:99px; padding:8px 18px; width:fit-content}
+  .flow .arr{color:var(--blue); letter-spacing:-2px; margin:0 10px; animation:pulse 1.6s infinite; display:inline-block}
+  @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+  #tier-detail{margin-top:16px}
+  #tier-detail .card{border-inline-start:4px solid var(--band)}
+  #tier-detail h4{color:var(--blue-dark); margin-bottom:8px}
+  #tier-detail .mono{font-family:var(--mono); font-size:.8rem; color:var(--green)}
+  .edge-band{margin-top:12px; background:var(--pastel-blue); border:1px dashed var(--blue);
+    border-radius:12px; padding:12px 16px; font-size:.85rem; color:var(--dim)}
+  .edge-band b{color:var(--blue-dark)}
+
+  /* ---------- stepper ---------- */
+  .steps{display:flex; gap:6px; margin:18px 0 14px; flex-wrap:wrap}
+  .steps button{flex:1 1 90px; background:#fff; color:var(--dim); border:1px solid var(--line);
+    border-radius:8px; padding:9px 6px; cursor:pointer; font-size:.78rem; transition:.15s; font-family:var(--sans)}
+  .steps button:hover{color:var(--blue-dark); border-color:var(--line-blue)}
+  .steps button.on{background:var(--band); color:#fff; border-color:var(--band); font-weight:700}
+  .steps button.done{border-color:var(--band); color:var(--band)}
+  #step-body{min-height:150px}
+  #step-body h4{color:var(--blue-dark)}
+  #step-body .file{font-family:var(--mono); color:var(--green); font-size:.8rem; margin-top:10px; display:block;
+    direction:ltr; text-align:start}
+  .eq{background:var(--pastel-blue); border:1px solid var(--line-blue); border-radius:8px; padding:10px 14px;
+    font-family:var(--mono); font-size:.88rem; color:var(--blue-dark); margin-top:12px; overflow-x:auto;
+    direction:ltr; text-align:left}
+  .stepper-nav{display:flex; gap:10px; margin-top:14px}
+  .btn{background:var(--blue); color:#fff; border:0; border-radius:8px; padding:9px 18px;
+    font-weight:700; cursor:pointer; font-size:.9rem; font-family:var(--sans)}
+  .btn:hover{background:var(--band-deep)}
+  .btn.ghost{background:#fff; color:var(--blue); border:1px solid var(--blue)}
+  .btn.ghost:hover{background:var(--pastel-blue)}
+
+  /* ---------- playground ---------- */
+  .pg{display:grid; grid-template-columns:340px 1fr; gap:16px}
+  @media(max-width:900px){.pg{grid-template-columns:1fr}}
+  .slider-row{margin:12px 0}
+  .slider-row label{display:flex; justify-content:space-between; font-size:.85rem; color:var(--dim); gap:8px}
+  .slider-row label output{color:var(--blue-dark); font-family:var(--mono); font-weight:700}
+  input[type=range]{width:100%; accent-color:var(--blue); margin-top:4px}
+  .massbar{display:flex; height:26px; border-radius:6px; overflow:hidden; border:1px solid var(--line);
+    margin:6px 0 2px; font-size:.7rem; background:#fff}
+  .massbar div{display:flex; align-items:center; justify-content:center; white-space:nowrap; color:#fff; font-weight:700}
+  .mF{background:var(--red)} .mN{background:var(--blue)} .mT{background:#c5c7c9; color:var(--dim)!important}
+  .mod-block{margin-bottom:14px}
+  .mod-block h4{font-size:.85rem; color:var(--dim); font-weight:600; margin-bottom:4px}
+  .fused-box{background:#fff; border-radius:10px; padding:14px; border:1px solid var(--line)}
+  .alarm{display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:1.05rem;
+    padding:8px 18px; border-radius:99px}
+  .alarm.on{background:#fbeaee; color:var(--red); border:1px solid var(--red)}
+  .alarm.off{background:#e6f4ef; color:var(--green); border:1px solid #bfe3d4}
+  .lamp{width:12px; height:12px; border-radius:50%; flex:0 0 auto}
+  .alarm.on .lamp{background:var(--red); box-shadow:0 0 12px var(--red); animation:pulse 1s infinite}
+  .alarm.off .lamp{background:var(--green)}
+  .divlog{font-family:var(--mono); font-size:.78rem; color:var(--dim); margin-top:8px}
+  .divlog span.hit{color:var(--amber); font-weight:700} .divlog span.safe{color:var(--blue); font-weight:700}
+  .note{font-size:.8rem; color:var(--dim); margin-top:12px; border-inline-start:3px solid var(--line-blue);
+    padding-inline-start:10px}
+  .note b{color:var(--text)}
+
+  /* ---------- attention heatmap ---------- */
+  .heat{display:grid; grid-template-columns:auto repeat(3, 90px); gap:6px; font-family:var(--mono);
+    font-size:.8rem; margin-top:10px; direction:ltr}
+  .heat .cell{height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:800; text-shadow:0 1px 2px rgba(0,40,80,.35)}
+  .heat .lbl{color:var(--dim); display:flex; align-items:center; font-size:.75rem}
+
+  /* ---------- data cards ---------- */
+  .ds h3{color:var(--blue-dark); font-size:1rem}
+  .ds .nums{font-family:var(--mono); font-size:.78rem; color:var(--green); margin:6px 0; direction:ltr; text-align:start}
+
+  /* ---------- repo tree (accordion) ---------- */
+  details.tree{border:1px solid var(--line-blue); border-radius:10px; margin:10px 0; background:#fff; overflow:hidden}
+  details.tree summary{cursor:pointer; padding:11px 16px; font-size:.92rem;
+    font-weight:600; color:#fff; background:var(--band); list-style:none; display:flex; justify-content:space-between; gap:10px}
+  details.tree summary::after{content:"⌃"; transition:.2s; flex:0 0 auto}
+  details.tree[open] summary::after{content:"⌄"}
+  details.tree summary:hover{background:var(--band-deep)}
+  details.tree .body{padding:8px 18px 14px; color:var(--dim); font-size:.88rem}
+  details.tree .body p{margin:8px 0}
+  details.tree .body .f{font-family:var(--mono); color:var(--blue-dark); font-weight:700; direction:ltr; unicode-bidi:embed}
+  details.tree .body .s{color:var(--green); font-family:var(--mono); font-size:.78rem; direction:ltr; unicode-bidi:embed}
+
+  /* ---------- tables ---------- */
+  table{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:10px; background:#fff}
+  th,td{border:1px solid var(--line); padding:8px 10px; text-align:start; vertical-align:top}
+  th{background:var(--band); color:#fff; font-weight:600}
+  tr:nth-child(even) td{background:var(--bg-soft)}
+  td.mono{font-family:var(--mono); font-size:.8rem; direction:ltr; text-align:left}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--band); color:#eaf3fb; padding:26px 0 60px; font-size:.85rem}
+  footer b{color:#fff}
+  footer .check li{margin:4px 0; list-style:none}
+  footer .check li::before{content:"✓ "; color:var(--lime)}
+  footer code{background:rgba(255,255,255,.15); color:#fff}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span data-i18n="topbar.left"></span>
+  <span class="tb-right">
+    <span data-i18n="topbar.right"></span>
+    <span class="langs">
+      <button data-lang="en" onclick="setLang('en')">EN</button>
+      <button data-lang="fr" onclick="setLang('fr')">FR</button>
+      <button data-lang="it" onclick="setLang('it')">IT</button>
+      <button data-lang="ar" onclick="setLang('ar')">AR</button>
+    </span>
+  </span>
+</div>
+<div class="brandbar">
+  <div class="logo">FORFIRE<span>-AI</span> 🔥</div>
+  <div class="strap" data-i18n="brand.strap"></div>
+</div>
+
+<nav>
+  <a href="simulation.html" style="color:var(--green); border-bottom:3px solid transparent">🟢 Beginner guide</a>
+  <a href="#architecture" data-i18n="nav.arch"></a>
+  <a href="#algorithm" data-i18n="nav.algo"></a>
+  <a href="#playground" data-i18n="nav.play"></a>
+  <a href="#attention" data-i18n="nav.gate"></a>
+  <a href="#data" data-i18n="nav.data"></a>
+  <a href="#code" data-i18n="nav.code"></a>
+  <a href="#results" data-i18n="nav.res"></a>
+  <a href="#run" data-i18n="nav.run"></a>
+</nav>
+
+<div class="band">
+  <div class="wrap">
+    <h1>FORFIRE-AI</h1>
+    <p class="sub" data-i18n="hero.sub"></p>
+    <p class="en" data-i18n="hero.tech"></p>
+    <div class="contrib" id="contrib"></div>
+    <p style="margin-top:18px">
+      <span class="tag fire">FLAME</span><span class="tag fire">D-Fire</span><span class="tag fire">FIgLib</span>
+      <span class="tag">YOLOv8n + CBAM</span><span class="tag">IsolationForest (IIoT)</span>
+      <span class="tag">Dempster–Shafer</span><span class="tag">Jetson Orin Nano target</span>
+      <span class="tag green" data-i18n="tags.interactive"></span>
+    </p>
+  </div>
+</div>
+
+<section id="architecture">
+  <div class="wrap">
+    <h2 data-i18n="arch.h"></h2>
+    <p class="lead" data-i18n="arch.lead"></p>
+    <div class="flow" data-i18n="arch.flow"></div>
+    <div class="tiers" id="tiers"></div>
+    <div id="tier-detail"></div>
+    <div class="edge-band" data-i18n="arch.edge"></div>
+  </div>
+</section>
+
+<section id="algorithm" class="alt">
+  <div class="wrap">
+    <h2 data-i18n="algo.h"></h2>
+    <p class="lead" data-i18n="algo.lead"></p>
+    <div class="steps" id="stepbtns"></div>
+    <div class="card" id="step-body"></div>
+    <div class="stepper-nav">
+      <button class="btn ghost" onclick="stepBy(-1)" data-i18n="algo.prev"></button>
+      <button class="btn" onclick="stepBy(1)" data-i18n="algo.next"></button>
+    </div>
+  </div>
+</section>
+
+<section id="playground">
+  <div class="wrap">
+    <h2 data-i18n="play.h"></h2>
+    <p class="lead" data-i18n="play.lead"></p>
+    <div class="pg">
+      <div class="card">
+        <div class="mod-block">
+          <h4 data-i18n="play.cam"></h4>
+          <div class="slider-row"><label><span data-i18n="play.pi"></span><sub>c</sub> <output id="o-pi-c">0.60</output></label>
+            <input type="range" id="pi-c" min="0" max="1" step="0.01" value="0.60"></div>
+          <div class="slider-row"><label><span data-i18n="play.r"></span><sub>c</sub> <output id="o-r-c">0.80</output></label>
+            <input type="range" id="r-c" min="0" max="1" step="0.01" value="0.80"></div>
+        </div>
+        <div class="mod-block">
+          <h4 data-i18n="play.iiot"></h4>
+          <div class="slider-row"><label><span data-i18n="play.pi"></span><sub>s</sub> <output id="o-pi-s">0.30</output></label>
+            <input type="range" id="pi-s" min="0" max="1" step="0.01" value="0.30"></div>
+          <div class="slider-row"><label><span data-i18n="play.r"></span><sub>s</sub> <output id="o-r-s">0.60</output></label>
+            <input type="range" id="r-s" min="0" max="1" step="0.01" value="0.60"></div>
+        </div>
+        <div class="mod-block">
+          <h4 data-i18n="play.lwir"></h4>
+          <div class="slider-row"><label><span data-i18n="play.pi"></span><sub>d</sub> <output id="o-pi-d">0.85</output></label>
+            <input type="range" id="pi-d" min="0" max="1" step="0.01" value="0.85"></div>
+          <div class="slider-row"><label><span data-i18n="play.r"></span><sub>d</sub> <output id="o-r-d">0.80</output></label>
+            <input type="range" id="r-d" min="0" max="1" step="0.01" value="0.80"></div>
+        </div>
+        <div class="slider-row"><label><span data-i18n="play.tau"></span> <output id="o-tau">0.78</output></label>
+          <input type="range" id="tau" min="0.3" max="0.95" step="0.01" value="0.78"></div>
+        <div class="slider-row"><label><span data-i18n="play.div"></span> <output id="o-div">0.30</output></label>
+          <input type="range" id="div" min="0" max="1" step="0.01" value="0.30"></div>
+        <button class="btn" onclick="noiseTick()" data-i18n="play.noise"></button>
+      </div>
+      <div>
+        <div class="card mod-block">
+          <h4 data-i18n="play.massesTitle"></h4>
+          <div id="mod-bars"></div>
+        </div>
+        <div class="fused-box" style="margin-top:14px">
+          <h4 style="font-size:.85rem;color:var(--dim);margin-bottom:6px" data-i18n="play.fusedTitle"></h4>
+          <div id="fused-bar"></div>
+          <div class="divlog" id="div-log"></div>
+          <div style="margin-top:14px; display:flex; align-items:center; gap:16px; flex-wrap:wrap">
+            <span id="alarm-lamp" class="alarm off"><span class="lamp"></span><span id="alarm-text">MONITORING</span></span>
+            <span style="font-family:var(--mono); font-size:.8rem; direction:ltr" id="beliefs"></span>
+          </div>
+          <div class="note" data-i18n="play.note"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="attention" class="alt">
+  <div class="wrap">
+    <h2 data-i18n="gate.h"></h2>
+    <p class="lead" data-i18n="gate.lead"></p>
+    <div class="pg" style="grid-template-columns:340px 1fr">
+      <div class="card">
+        <div class="slider-row"><label><span data-i18n="gate.piC"></span> <output id="g-pi-c">0.90</output></label>
+          <input type="range" id="g-c" min="0.01" max="0.99" step="0.01" value="0.90"></div>
+        <div class="slider-row"><label><span data-i18n="gate.piS"></span> <output id="g-pi-s">0.50</output></label>
+          <input type="range" id="g-s" min="0.01" max="0.99" step="0.01" value="0.50"></div>
+        <div class="slider-row"><label><span data-i18n="gate.piD"></span> <output id="g-pi-d">0.10</output></label>
+          <input type="range" id="g-d" min="0.01" max="0.99" step="0.01" value="0.10"></div>
+        <div id="entropies" class="divlog"></div>
+        <div class="note" data-i18n="gate.note"></div>
+      </div>
+      <div class="card">
+        <h4 style="font-size:.85rem;color:var(--dim);margin-bottom:2px" data-i18n="gate.heatTitle"></h4>
+        <div class="heat" id="heat"></div>
+        <div class="note" style="margin-top:14px" data-i18n="gate.fullNote"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="data">
+  <div class="wrap">
+    <h2 data-i18n="data.h"></h2>
+    <p class="lead" data-i18n="data.lead"></p>
+    <div class="grid g3" id="data-cards"></div>
+    <div class="card" style="margin-top:14px; border-inline-start:4px solid var(--red)">
+      <span data-i18n="data.leak"></span>
+      <span class="divlog" style="display:block;margin-top:6px">manifest: <span class="mono">frame_path, event_id, split, label</span></span>
+    </div>
+  </div>
+</section>
+
+<section id="code" class="alt">
+  <div class="wrap">
+    <h2 data-i18n="code.h"></h2>
+    <p class="lead" data-i18n="code.lead"></p>
+    <div id="trees"></div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <h2 data-i18n="res.h"></h2>
+    <p class="lead" data-i18n="res.lead"></p>
+    <table>
+      <thead><tr id="res-head"></tr></thead>
+      <tbody id="res-body"></tbody>
+    </table>
+    <div class="note" style="margin-top:12px" data-i18n="res.note"></div>
+  </div>
+</section>
+
+<section id="run" class="alt">
+  <div class="wrap">
+    <h2 data-i18n="run.h"></h2>
+    <p class="lead" data-i18n="run.lead1"></p>
+<pre>
+<span class="c"># from wildfire-fusion/  (Windows cmd; Python 3.11 verified)</span>
+pytest                                          <span class="c"># 49 tests, incl. the leakage assertion</span>
+python scripts\smoke_dual_stream.py             <span class="c"># dual-stream forward + loss + backward</span>
+python scripts\run_field_sim.py --events 3      <span class="c"># Algorithm 1 over a synthetic timeline</span>
+python src\train_contextual.py --synthetic      <span class="c"># train the transformer (toy windows)</span>
+python src\calibrate_decisional.py --synthetic  <span class="c"># grid-search r_c, r_d, r_s, tau</span>
+python benchmark\ablation.py --events 3         <span class="c"># Table VI + bootstrap CIs</span>
+</pre>
+    <p class="lead" style="margin-top:14px" data-i18n="run.lead2"></p>
+<pre>
+python scripts\get_datasets.py --dataset dfire
+python scripts\build_splits.py --dataset dfire          <span class="c"># zero event-ID overlap, asserted</span>
+python scripts\harmonize_labels.py --dataset dfire      <span class="c"># canonical [smoke, fire]</span>
+python src\train_perceptual.py --dataset dfire --arch single --mode rgb
+python src\train_perceptual.py --dataset dfire --arch dual            <span class="c"># RGB+LWIR full system</span>
+python benchmark\run_benchmark.py --table iv --dataset dfire --weights runs\&lt;exp&gt;\best.pt
+</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b data-i18n="footer.title"></b>
+    <ul class="check" id="footer-list" style="margin-top:8px"></ul>
+    <p style="margin-top:14px" data-i18n="footer.tagline"></p>
+  </div>
+</footer>
+
+<script>
+/* ================= i18n ================= */
+const I18N = {
+/* ============================================================ EN ==== */
+en: {
+  dir:"ltr",
+  title:"FORFIRE-AI — Multimodal Wildfire Early-Warning System",
+  topbar:{left:"<b>FORFIRE-AI</b> · Optimisation de la Prévention et de la détection des Incendies de Forêts par l'IA",
+          right:"coastal forests, Tunisia–Italy"},
+  brand:{strap:"Multimodal Wildfire Early-Warning System — three tiers, four layers, one defensible alarm."},
+  nav:{arch:"Architecture", algo:"Algorithm 1", play:"Fusion playground", gate:"Entropy gate",
+       data:"Datasets", code:"Code map", res:"Results", run:"Run it"},
+  hero:{sub:"Optimisation de la Prévention et de la détection des Incendies de Forêts par les techniques de l'Intelligence Artificielle — cas des forêts des zones côtières Tunisie–Italie.",
+        tech:"An <b>entropy-gated cross-modal transformer</b> (contextual tier) and a <b>conflict-aware Dempster–Shafer rule</b> (decisional tier) fuse RGB + LWIR cameras with low-cost IIoT environmental nodes, run on a Jetson-class edge device, and publish alarms over MQTT within an 8 kB budget."},
+  tags:{interactive:"everything below is interactive & runs offline"},
+  contrib:[
+    {c:"c-green",  t:"1 · Dual-stream perception.", b:"YOLOv8n duplicated into RGB and LWIR stems, CBAM attention after every C2f block, mid-backbone fusion — one shared detector, two eyes."},
+    {c:"c-purple", t:"2 · Entropy-gated context.", b:"A 4-layer transformer refines per-modality confidences: uncertain evidence is <i>gated down</i> before it can contaminate the fusion."},
+    {c:"c-orange", t:"3 · Conflict-aware fusion.", b:"Dempster–Shafer masses per modality; when pairwise belief-divergence is high, the rule <i>switches to a cautious weighted average</i> instead of amplifying conflict."},
+    {c:"c-blue",   t:"4 · Edge-ready early warning.", b:"ONNX → TensorRT INT8 on Jetson (74 ms RGB+LWIR), alarms ≤ 8 kB over MQTT/TLS, and a detection <i>horizon</i> metric vs legacy monitoring."}],
+  arch:{h:"<span class='tick'>01</span> · Architecture — click any tier",
+    lead:"Four layers in three tiers. Signals flow left to right: raw modalities are detected on (perceptual), confidence is refined in context (contextual), and a defensible go/no-go decision is made (decisional). An edge/ops band wraps everything.",
+    flow:"🛰️ sensors <span class='arr'>⟶⟶</span> perceptual <span class='arr'>⟶⟶</span> contextual <span class='arr'>⟶⟶</span> decisional <span class='arr'>⟶⟶</span> 🚨 alarm",
+    edge:"<b>Edge / ops layer (§7–§8):</b> ONNX export (opset 17) → TensorRT INT8 via <code>trtexec</code> on the Jetson (paper targets: ≈4.2 GB resident, ≈74 ms RGB+LWIR / 36 ms RGB, 312 ms end-to-end) · MQTT/TLS with an 8 kB payload budget (bulky fields are dropped, never truncated) · operational policies: 2 s clock-skew tolerance, modality inactive after 2 missed heartbeats, 2-consecutive-tick alarm hysteresis, 300 s cooldown after a human clears an alarm.",
+    tiers:[
+      {k:"Layer 1 · Sensing", name:"What's out there", items:[
+        ["PTZ RGB camera","fixed-view pan-tilt-zoom, the always-on eye (FIgLib geometry)"],
+        ["LWIR camera / UAV","thermal contrast + on-demand re-tasking for confirmation"],
+        ["IIoT nodes","temp · RH · PM2.5 · PM10 · MQ-2 gas — the nose that sometimes smells first"]],
+       detail:"<h4>Sensing layer</h4><p>Three complementary modalities. The paper's field finding: the IIoT ramp sometimes <b>leads</b> the visual plume and sometimes <b>lags</b> it — which is exactly why the fusion must tolerate both orders (the field sim exposes the offset as a free parameter).</p><span class='mono'>every frame / reading is timestamped UTC at capture → ±30 s alignment window (iiot_branch.align_reading)</span>"},
+      {k:"Layer 2 · Perceptual", name:"Detect on each stream", items:[
+        ["Dual-stream YOLOv8n","duplicated stems (RGB / LWIR) → concat+1×1 fusion → shared P3–P5 + head"],
+        ["CBAM everywhere","channel + spatial attention after every C2f block of both streams"],
+        ["IsolationForest (IIoT)","anomaly score over 5 env. features → confidence-like value in [0,1]"]],
+       detail:"<h4>Perceptual tier (§4)</h4><p>One detector, two eyes. The stems are copied from pretrained yolov8n (LWIR initialized from the RGB copy), fused after the stage-2 C2f blocks via channel-concat + 1×1 conv — a <b>documented assumption</b>, since the paper never states fusion depth. The loss is the paper's eq. (2): λ₁·CIoU + λ₂·focal + λ₃·obj (1.0 / 0.5 / 0.7, γ = 1.5), mapped onto Ultralytics' TAL machinery plus an explicit objectness BCE.</p><span class='mono'>src/perceptual/{cbam,dual_stream_yolo,losses,iiot_branch}.py</span>"},
+      {k:"Layer 3 · Contextual", name:"Refine the confidence", items:[
+        ["32-frame window","sinusoidal temporal + MLP spatial box encodings"],
+        ["4-layer entropy-gated transformer","A_ij = softmax(QKᵀ/√d)·σ(g_ij), g seeded by H(π)"],
+        ["3-FC + sigmoid head","outputs refined π̂_m per modality slot"]],
+       detail:"<h4>Contextual tier (§5)</h4><p>Raw detector scores are noisy and modality-biased. This tier looks at all modality tokens <i>together</i> — within a 32-frame temporal window — and refines each confidence. The gate means a modality that “doesn't know” (π near 0.5 ⇒ max entropy) contributes least. Training objective is a labeled assumption (window-level BCE, AdamW 5e-4, 30 epochs, early stopping).</p><span class='mono'>src/contextual/{positional,gated_transformer}.py — see the live heatmap below</span>"},
+      {k:"Layer 4 · Decisional", name:"Decide, defensibly", items:[
+        ["Mass functions (eq. 4)","m(F)=r·π, m(¬F)=r·(1−π), m(Θ)=1−r per modality"],
+        ["Conflict-aware fold (eq. 5)","Dempster's rule, but Jousselme divergence > 0.3 ⇒ cautious weighted average"],
+        ["τ threshold + hysteresis","alarm at fused m(F) > τ; 2 consecutive ticks; 300 s cooldown"]],
+       detail:"<h4>Decisional tier (§6)</h4><p>Uncertainty is carried, not discarded: each modality's ignorance is the mass on Θ. Dempster's rule <b>amplifies agreeing evidence</b> (two moderate modalities can cross τ where each alone cannot — that is the early-warning mechanism) but explodes under total conflict — hence the divergence-gated fallback to a weighted average. Reliability coefficients r<sub>c</sub>, r<sub>d</sub>, r<sub>s</sub> and τ are grid-searched on validation data (min FPR s.t. recall ≥ target) and loaded from <span class='mono'>configs/decisional_calibration.yaml</span> — never hardcoded.</p><span class='mono'>src/decisional/evidential_fusion.py — try it live in section 03</span>"}]},
+  algo:{h:"<span class='tick'>02</span> · How a tick works — Algorithm 1, step by step",
+    lead:"Every fusion tick (~once per sensor beat) runs exactly this sequence. Click through the steps — each names the file that implements it.",
+    prev:"← Prev", next:"Next →",
+    steps:[
+      {t:"frames arrive", body:"<p>Three <code>ModalityFrame</code>s arrive for this tick: name (c/d/s), active flag, detected events Δ, raw confidence π, and an embedding vector. Before fusion, the loop applies the operational policies: a modality that missed 2 heartbeats is marked <b>inactive</b> (packet-loss policy), and frames whose capture timestamp drifted &gt; 2 s from tick time are dropped (clock-sync policy).</p>", file:"src/pipeline/fusion_loop.py — FusionLoop.tick + ModalityFrame"},
+      {t:"contextual refinement", body:"<p>Active modality embeddings are stacked into tokens. The 4-layer entropy-gated transformer (eq. 3) attends across them — uncertain modalities gated down — and the 3-FC + sigmoid head emits refined confidences π̂<sub>m</sub>. One token per active modality here; the training tier additionally models the 32-frame temporal window.</p>", file:"src/contextual/gated_transformer.py — ContextualEncoder (eq. 3)"},
+      {t:"mass functions — eq. (4)", body:"<p>Each refined confidence becomes a Dempster–Shafer mass function over {fire, ¬fire, Θ}, where the reliability coefficient r<sub>m</sub> decides how much of the probability mass is <i>committed</i> vs held in ignorance (Θ). A cheap sensor simply has less committed mass.</p><div class='eq'>m(F) = r·π̂ &nbsp;&nbsp; m(¬F) = r·(1−π̂) &nbsp;&nbsp; m(Θ) = 1 − r</div>", file:"src/decisional/evidential_fusion.py — mass_function"},
+      {t:"conflict-aware fusion — eq. (5)", body:"<p>Masses fold pairwise (c → s → d). Before each combine, the Jousselme belief-divergence between the running fused mass and the next modality is computed: <b>low</b> divergence → Dempster's orthogonal sum (agreement amplifies belief); <b>high</b> divergence (&gt; 0.3) → cautious weighted average (never divide by ≈0).</p><div class='eq'>m⊕ = m₁⊕m₂ normalized by 1−K, with fallback when K → 1</div>", file:"src/decisional/evidential_fusion.py — conflict_aware_fuse"},
+      {t:"threshold + hysteresis", body:"<p>If fused m(F) &gt; τ the tick is a raw alarm. The loop requires <b>2 consecutive</b> raw alarm ticks to <i>confirm</i> (hysteresis), latches until a human clears, then cools down 300 s before re-arming.</p>", file:"src/pipeline/fusion_loop.py — alarm_hysteresis policy"},
+      {t:"publish + supervisory layer", body:"<p>Confirmed alarms are published to <code>wildfire/alarm/&lt;cell&gt;</code> over MQTT/TLS — JSON ≤ 8 kB, bulky fields dropped whole rather than truncated — and pushed to the supervisory queue with a UAV re-task suggestion whenever the drone stream (d) was not among the active modalities.</p>", file:"src/edge/mqtt_client.py + fusion_loop (supervisory_queue)"}]},
+  play:{h:"<span class='tick'>03</span> · Live fusion playground — the actual decisional-tier math",
+    lead:"This is a faithful JavaScript port of <code>src/decisional/evidential_fusion.py</code>: eq. (4) builds a mass function per modality, Jousselme divergence decides between Dempster's rule and the cautious weighted average, and the fused belief in “fire” is compared against τ. Move the sliders and watch the rule switch.",
+    cam:"🎥 c — PTZ RGB camera", iiot:"🌡️ s — IIoT node (temp/PM/gas)", lwir:"🚁 d — LWIR / UAV stream",
+    pi:"raw confidence π", r:"reliability r", tau:"alarm threshold τ", div:"divergence switch threshold",
+    noise:"🎲 add sensor noise & re-fuse",
+    massesTitle:"Per-modality masses — eq. (4): m(F)=r·π, m(¬F)=r·(1−π), m(Θ)=1−r",
+    fusedTitle:"Fused belief (conflict-aware fold, c → s → d)",
+    alarmOn:"🔥 FIRE ALARM — fusing m(F)={f} > τ={t}", alarmOff:"MONITORING — m(F)={f} ≤ τ={t}",
+    foldDempster:"fold <span class='safe'>Dempster</span> — D={d}", foldWeighted:"fold <span class='hit'>weighted-average</span> — D={d}",
+    names:{c:"🎥 camera (c)", s:"🌡️ IIoT (s)", d:"🚁 LWIR (d)"},
+    note:"Try the paper's core trick: set π<sub>c</sub>=0.95 with r<sub>c</sub>=0.9 and π<sub>s</sub>=0.05 with r<sub>s</sub>=0.9 — <b>maximal conflict</b>. Dempster's rule alone would divide by ≈0; the divergence gate flips to the weighted average and the system reports honest uncertainty instead of a hallucinated verdict. Two <i>agreeing</i> mid-confidence modalities (π≈0.7, r≈0.8) fuse past τ=0.78 — that amplification is why multimodality buys an earlier alarm."},
+  gate:{h:"<span class='tick'>04</span> · The entropy gate — eq. (3), visualized",
+    lead:"Inside the contextual transformer, attention between modality tokens is multiplied by a learned gate <code>g<sub>ij</sub> = σ(w·[H<sub>i</sub>, H<sub>j</sub>] + b)</code> seeded by the binary entropy <code>H(π) = −π ln π − (1−π) ln(1−π)</code> of each modality's confidence. The heatmap below uses the illustrative gate weights from this demo build (the production gate is learned — <code>src/contextual/gated_transformer.py</code>). Low confidence ⇒ high entropy ⇒ gate opens <i>less</i>.",
+    piC:"π (camera)", piS:"π (IIoT)", piD:"π (LWIR)",
+    heatTitle:"Gate weight g<sub>ij</sub> = σ(1.2·H<sub>i</sub> + 1.2·H<sub>j</sub> − 1.6)",
+    entConf:"— confident", entUnc:"— uncertain, gated down",
+    note:"H peaks at π=0.5 (maximal uncertainty). A modality that “doesn't know” contributes least to every other token — that's the whole idea of eq. (3) in one sentence.",
+    fullNote:"Full attention is <code>A<sub>ij</sub> = softmax(Q<sub>i</sub>K<sub>j</sub>ᵀ/√d<sub>k</sub>) · σ(g<sub>ij</sub>)</code> — content similarity times this uncertainty gate, stacked over 4 layers with residual + LayerNorm, then a 3-FC + sigmoid head outputs the refined per-modality confidence π̂<sub>m</sub> fed to the fusion below."},
+  data:{h:"<span class='tick'>05</span> · Benchmarks & the leakage rule",
+    lead:"Three public benchmarks cover the three sensing geometries. One rule governs all of them: <b style='color:var(--text)'>split by event, never by frame</b> — random frame-level splitting lets adjacent frames of the same fire leak between train and test and inflates every metric.",
+    cards:[
+      {col:"var(--green)", t:"FLAME (aerial RGB+LWIR)", nums:"39,375 train + 8,617 test frames · 2,003 segmentation masks",
+       b:"Prescribed pile burns from UAVs. IEEE DataPort (free account, license). FLAME2 offers 53,451 registered RGB/IR pairs — the co-registration the dual stream really wants."},
+      {col:"var(--amber)", t:"D-Fire (ground RGB)", nums:"21,527 images · 1,164 fire · 5,867 smoke-only · 4,658 both · 9,838 negative",
+       b:"YOLO-format boxes, ships pre-split. Fastest download (plain git clone) — always the first end-to-end smoke test. Class ids are verified, not assumed."},
+      {col:"#6b3fa0", t:"FIgLib (fixed-view PTZ)", nums:"24,800 frames · 315 sequences · 101 cameras / 30 stations (2016–2021)",
+       b:"~40 min before/after ignition, ~60 s apart — real timing for the detection-horizon metric. Its official cross-validation splits are already sequence-level."}],
+    leak:"<b style='color:var(--red)'>Leakage control is a tested invariant, not a hope:</b> <code>scripts/build_splits.py</code> groups frames by burn/flight/sequence ID, stratifies at the group level (fire &gt; smoke &gt; none) into 70/15/15, and <code>tests/test_splits_leakage.py</code> asserts <b style='color:var(--text)'>zero event-ID overlap</b> across splits."},
+  code:{h:"<span class='tick'>06</span> · Where everything lives in the repo",
+    lead:"Build order follows the spec: data → perceptual → contextual → decisional → loop → benchmark. Every paper gap is filled with a labeled <code>ASSUMPTION</code> rather than silently.",
+    trees:[
+      {t:"📂 src/perceptual — the eyes and the nose", items:[
+        "<span class='f'>cbam.py</span> <span class='s'>— §4.1</span> · channel + spatial attention, inserted after every C2f block of both streams.",
+        "<span class='f'>dual_stream_yolo.py</span> <span class='s'>— §4.2</span> · YOLOv8n duplicated into RGB/LWIR stems → parallel early stack → channel-concat + 1×1 conv fusion after stage-2 C2f (documented assumption) → shared P3–P5 + head, CBAM after each C2f. Built from Ultralytics' own modules so TAL loss & export stay compatible.",
+        "<span class='f'>losses.py</span> <span class='s'>— §4.3, eq. (2)</span> · L<sub>det</sub> = λ₁·CIoU + λ₂·focal + λ₃·obj, with λ₁=1.0, λ₂=0.5, λ₃=0.7, γ=1.5. Live path reuses Ultralytics TAL (CIoU+DFL, BCE/focal) + an explicit objectness BCE.",
+        "<span class='f'>iiot_branch.py</span> <span class='s'>— §4.4</span> · IsolationForest on [temp, RH, PM2.5, PM10, MQ-2 gas]; z-scored, ±30 s alignment window, outages never forward-filled across."]},
+      {t:"📂 src/contextual — the refiner", items:[
+        "<span class='f'>positional.py</span> <span class='s'>— §5.1</span> · sinusoidal temporal encoding over the 32-frame window + MLP spatial box encoding.",
+        "<span class='f'>gated_transformer.py</span> <span class='s'>— §5.2, eq. (3)</span> · 4-layer entropy-gated cross-modal attention (d_model 256, 8 heads) + 3-FC/sigmoid head → refined π̂<sub>m</sub>. <span class='f'>ConcatFusionEncoder</span> is the Table-VI ablation drop-in."]},
+      {t:"📂 src/decisional — the judge", items:[
+        "<span class='f'>evidential_fusion.py</span> <span class='s'>— §6, eq. (4)–(5)</span> · pure functions: mass functions, Dempster's orthogonal sum with a total-conflict guard, Jousselme belief divergence, the conflict-aware fold, and the τ alarm. Reliability r<sub>m</sub> and τ are <b>never hardcoded at call sites</b> — layered from configs, calibrated by <span class='f'>calibrate_decisional.py</span>."]},
+      {t:"📂 src/pipeline + src/edge — the loop and the radio", items:[
+        "<span class='f'>fusion_loop.py</span> <span class='s'>— §8, Algorithm 1</span> · <code>fusion_tick</code> (refine → mass → fuse → threshold → publish) wrapped by <code>FusionLoop</code> implementing the operational policies: packet-loss dropout, clock-skew filtering, hysteresis latch + cooldown, UAV re-task suggestion.",
+        "<span class='f'>export_onnx.py / trt_quantize.py / mqtt_client.py</span> <span class='s'>— §7.1–7.3</span> · opset-17 export, Jetson-only INT8 engine build with a 5,000-image proportional calibration list, MQTT/TLS with the 8 kB budget."]},
+      {t:"📂 scripts + benchmark + tests — the evidence", items:[
+        "<span class='f'>get_datasets.py · build_splits.py · harmonize_labels.py</span> <span class='s'>— §3</span> · acquisition, leakage-safe splits, taxonomy unification.",
+        "<span class='f'>run_field_sim.py</span> <span class='s'>— §9</span> · replay: labeled sequences as the camera stream + a synthetic IIoT ramp that leads or lags ignition → detection-horizon metric, clearly labeled synthetic.",
+        "<span class='f'>benchmark/metrics.py · run_benchmark.py · ablation.py</span> <span class='s'>— §10–§11</span> · P/R/F1, mAP@.5 via Ultralytics val, FPR with an explicit denominator, raw latency traces, ≥1000-resample bootstrap CIs, per-class confusion matrices, and the four Table-VI ablations with CI'd deltas.",
+        "<span class='f'>tests/</span> · 49 tests including the leakage assertion and every fusion policy."]}]},
+  res:{h:"<span class='tick'>07</span> · What the numbers mean",
+    lead:"Paper-reported targets vs what this repo computes. Anything synthetic in this build is labeled synthetic — no silent borrowing of published numbers.",
+    head:["Metric","Definition","Paper reports","This repo"],
+    rows:[
+      ["P / R / F1, mAP@.5","<span class='mono'>IoU 0.5 convention, Ultralytics val()</span>","Table IV","computed per checkpoint + image-level P/R/F1 with bootstrap CIs + per-class confusion matrices"],
+      ["FPR / 24 h","<span class='mono'>false alarms ÷ monitored no-fire windows (denominator logged)</span>","&lt; 2% (window count unspecified)","denominator made explicit by design"],
+      ["Detection horizon","<span class='mono'>legacy_monitor_time − alarm_time (per event)</span>","<span class='mono'>86 s ± 14 s (N = 3!)</span>","field-sim replay reports mean ± std + CI, labeled SYNTHETIC"],
+      ["Forward latency","<span class='mono'>capture → alarm-published vs raw forward</span>","<span class='mono'>74 ms (RGB+LWIR) · 312 ms end-to-end</span>","per-call traces saved raw (not just mean/p95)"],
+      ["Alarm threshold τ","<span class='mono'>fused m(F) &gt; τ</span>","<span class='mono'>0.78 (their val set)</span>","recalibrated by grid search: min FPR s.t. recall ≥ target"],
+      ["Ablations","<span class='mono'>no-CBAM · concat-vs-transformer · weighted-avg-only · dempster-only</span>","Table VI deltas, no significance","deltas + bootstrap CIs (the fix)"]],
+    note:"Sanity result from this build's synthetic replay: two <i>agreeing</i> mid-confidence modalities fuse past τ where neither crosses it alone (Dempster amplification), while a maximally conflicting pair is defused to a weighted average instead of a division by ~0. That behavior is exactly what the conflict-aware rule is for — and it's unit-tested."},
+  run:{h:"<span class='tick'>08</span> · Run it",
+    lead1:"Full runbook lives in the repo README. The 5-minute, no-dataset demo:",
+    lead2:"Real-data path (D-Fire first — no auth wall):"},
+  footer:{title:"Reproducibility gates before calling anything “reproduced”:",
+    items:["exact partitions committed (split_manifest.csv per dataset) · leakage assertion green",
+           "labels harmonized <i>and verified against real label files</i> · training config logged per run",
+           "baselines retrained under identical splits/augmentation · CIs + confusion matrices reported",
+           "raw latency traces saved · operational policies implemented & documented",
+           "every <code>ASSUMPTION</code> replaced with a justified real value before any external claim"],
+    tagline:"FORFIRE-AI · single-file interactive explainer · EN/FR/IT/AR · works offline (Titillium Web falls back to system fonts)"}
+},
+/* ============================================================ FR ==== */
+fr: {
+  dir:"ltr",
+  title:"FORFIRE-AI — Système multimodal d'alerte précoce aux incendies de forêt",
+  topbar:{left:"<b>FORFIRE-AI</b> · Optimisation de la Prévention et de la détection des Incendies de Forêts par l'IA",
+          right:"forêts des zones côtières Tunisie–Italie"},
+  brand:{strap:"Système multimodal d'alerte précoce aux incendies de forêt — trois niveaux, quatre couches, une alarme défendable."},
+  nav:{arch:"Architecture", algo:"Algorithme 1", play:"Simulateur de fusion", gate:"Porte d'entropie",
+       data:"Jeux de données", code:"Carte du code", res:"Résultats", run:"Exécution"},
+  hero:{sub:"Optimisation de la Prévention et de la détection des Incendies de Forêts par les techniques de l'Intelligence Artificielle — cas des forêts des zones côtières Tunisie–Italie.",
+        tech:"Un <b>transformer croisé à porte d'entropie</b> (niveau contextuel) et une <b>règle de Dempster–Shafer consciente des conflits</b> (niveau décisionnel) fusionnent les caméras RGB + LWIR avec des nœuds IIoT environnementaux à faible coût, tournent sur un dispositif embarqué de classe Jetson et publient les alarmes via MQTT dans un budget de 8 ko."},
+  tags:{interactive:"tout ce qui suit est interactif et fonctionne hors ligne"},
+  contrib:[
+    {c:"c-green",  t:"1 · Perception à double flux.", b:"YOLOv8n dupliqué en stems RGB et LWIR, attention CBAM après chaque bloc C2f, fusion en milieu de backbone — un détecteur partagé, deux yeux."},
+    {c:"c-purple", t:"2 · Contexte à porte d'entropie.", b:"Un transformer à 4 couches raffine les confiances par modalité : les preuves incertaines sont <i>atténuées</i> avant de pouvoir contaminer la fusion."},
+    {c:"c-orange", t:"3 · Fusion consciente des conflits.", b:"Masses de Dempster–Shafer par modalité ; quand la divergence de croyance par paires est élevée, la règle <i>passe à une moyenne pondérée prudente</i> au lieu d'amplifier le conflit."},
+    {c:"c-blue",   t:"4 · Alerte précoce embarquée.", b:"ONNX → TensorRT INT8 sur Jetson (74 ms RGB+LWIR), alarmes ≤ 8 ko via MQTT/TLS, et une métrique d'<i>horizon de détection</i> par rapport à la surveillance existante."}],
+  arch:{h:"<span class='tick'>01</span> · Architecture — cliquez sur un niveau",
+    lead:"Quatre couches en trois niveaux. Les signaux vont de gauche à droite : les modalités brutes sont détectées (perceptuel), la confiance est raffinée en contexte (contextuel), et une décision go/no-go défendable est prise (décisionnel). Une couche edge/ops enveloppe le tout.",
+    flow:"🛰️ capteurs <span class='arr'>⟶⟶</span> perceptuel <span class='arr'>⟶⟶</span> contextuel <span class='arr'>⟶⟶</span> décisionnel <span class='arr'>⟶⟶</span> 🚨 alarme",
+    edge:"<b>Couche edge / ops (§7–§8) :</b> export ONNX (opset 17) → TensorRT INT8 via <code>trtexec</code> sur le Jetson (cibles du papier : ≈4,2 Go résident, ≈74 ms RGB+LWIR / 36 ms RGB, 312 ms bout-en-bout) · MQTT/TLS avec un budget de 8 ko (les champs volumineux sont supprimés, jamais tronqués) · politiques opérationnelles : tolérance d'horloge 2 s, modalité inactive après 2 heartbeats manqués, hystérésis d'alarme de 2 ticks consécutifs, retour au calme de 300 s après acquittement humain.",
+    tiers:[
+      {k:"Couche 1 · Capteurs", name:"Ce qui se passe là-haut", items:[
+        ["Caméra PTZ RGB","pan-tilt-zoom à vue fixe, l'œil permanent (géométrie FIgLib)"],
+        ["Caméra LWIR / UAV","contraste thermique + re-tasking à la demande pour confirmation"],
+        ["Nœuds IIoT","température · HR · PM2.5 · PM10 · gaz MQ-2 — le nez qui sent parfois le premier"]],
+       detail:"<h4>Couche de capteurs</h4><p>Trois modalités complémentaires. Constat de terrain du papier : la rampe IIoT <b>précède</b> parfois le panache visuel et le <b>suit</b> parfois — c'est précisément pourquoi la fusion doit tolérer les deux ordres (le simulateur expose le décalage comme paramètre libre).</p><span class='mono'>chaque frame / lecture est horodatée UTC à la capture → fenêtre d'alignement ±30 s (iiot_branch.align_reading)</span>"},
+      {k:"Couche 2 · Perceptuel", name:"Détecter sur chaque flux", items:[
+        ["YOLOv8n double flux","stems dupliqués (RGB / LWIR) → fusion concat+1×1 → P3–P5 + tête partagés"],
+        ["CBAM partout","attention canal + spatiale après chaque bloc C2f des deux flux"],
+        ["IsolationForest (IIoT)","score d'anomalie sur 5 variables d'environnement → valeur de confiance dans [0,1]"]],
+       detail:"<h4>Niveau perceptuel (§4)</h4><p>Un détecteur, deux yeux. Les stems sont copiés du yolov8n pré-entraîné (le stem LWIR est initialisé depuis la copie RGB), fusionnés après les blocs C2f du stage-2 par concat de canaux + conv 1×1 — une <b>hypothèse documentée</b>, le papier ne précisant jamais la profondeur de fusion. La perte est l'éq. (2) du papier : λ₁·CIoU + λ₂·focal + λ₃·obj (1,0 / 0,5 / 0,7, γ = 1,5), adossée au TAL d'Ultralytics plus une BCE d'objectness explicite.</p><span class='mono'>src/perceptual/{cbam,dual_stream_yolo,losses,iiot_branch}.py</span>"},
+      {k:"Couche 3 · Contextuel", name:"Raffiner la confiance", items:[
+        ["Fenêtre de 32 frames","encodages temporels sinusoïdaux + spatiaux MLP des boîtes"],
+        ["Transformer 4 couches à porte d'entropie","A_ij = softmax(QKᵀ/√d)·σ(g_ij), g amorcé par H(π)"],
+        ["Tête 3-FC + sigmoïde","sort les confiances raffinées π̂_m par slot de modalité"]],
+       detail:"<h4>Niveau contextuel (§5)</h4><p>Les scores bruts du détecteur sont bruités et biaisés par modalité. Ce niveau regarde tous les tokens <i>ensemble</i> — dans une fenêtre temporelle de 32 frames — et raffine chaque confiance. La porte fait qu'une modalité qui « ne sait pas » (π proche de 0,5 ⇒ entropie max) pèse le moins. L'objectif d'entraînement est une hypothèse étiquetée (BCE par fenêtre, AdamW 5e-4, 30 époques, early stopping).</p><span class='mono'>src/contextual/{positional,gated_transformer}.py — voir la heatmap interactive ci-dessous</span>"},
+      {k:"Couche 4 · Décisionnel", name:"Décider, défendablement", items:[
+        ["Fonctions de masse (éq. 4)","m(F)=r·π, m(¬F)=r·(1−π), m(Θ)=1−r par modalité"],
+        ["Pliage conscient des conflits (éq. 5)","règle de Dempster, mais divergence de Jousselme > 0,3 ⇒ moyenne pondérée prudente"],
+        ["Seuil τ + hystérésis","alarme si m(F) fusionnée > τ ; 2 ticks consécutifs ; retour au calme 300 s"]],
+       detail:"<h4>Niveau décisionnel (§6)</h4><p>L'incertitude est portée, pas jetée : l'ignorance de chaque modalité est la masse sur Θ. La règle de Dempster <b>amplifie les preuves concordantes</b> (deux modalités modérées peuvent franchir τ là où chacune seule échoue — c'est le mécanisme d'alerte précoce) mais explose en conflit total — d'où le repli à moyenne pondérée gouverné par la divergence. Les coefficients de fiabilité r<sub>c</sub>, r<sub>d</sub>, r<sub>s</sub> et τ sont recherchés sur grille sur les données de validation (FPR min sous contrainte de rappel) et chargés depuis <span class='mono'>configs/decisional_calibration.yaml</span> — jamais codés en dur.</p><span class='mono'>src/decisional/evidential_fusion.py — essayez-le en direct en section 03</span>"}]},
+  algo:{h:"<span class='tick'>02</span> · Un tick, pas à pas — l'Algorithme 1",
+    lead:"Chaque tick de fusion (~une fois par battement de capteur) exécute exactement cette séquence. Cliquez à travers les étapes — chacune nomme le fichier qui l'implémente.",
+    prev:"← Précédent", next:"Suivant →",
+    steps:[
+      {t:"arrivée des frames", body:"<p>Trois <code>ModalityFrame</code>s arrivent pour ce tick : nom (c/d/s), drapeau actif, événements détectés Δ, confiance brute π et un vecteur d'embedding. Avant la fusion, la boucle applique les politiques opérationnelles : une modalité qui a manqué 2 heartbeats est marquée <b>inactive</b> (politique de perte de paquets), et les frames dont l'horodatage dérive de plus de 2 s sont écartées (politique de synchro horloge).</p>", file:"src/pipeline/fusion_loop.py — FusionLoop.tick + ModalityFrame"},
+      {t:"raffinement contextuel", body:"<p>Les embeddings des modalités actives sont empilés en tokens. Le transformer à 4 couches à porte d'entropie (éq. 3) les parcourt — les modalités incertaines sont atténuées — et la tête 3-FC + sigmoïde émet les confiances raffinées π̂<sub>m</sub>. Un token par modalité active ici ; le tier d'entraînement modélise en plus la fenêtre temporelle de 32 frames.</p>", file:"src/contextual/gated_transformer.py — ContextualEncoder (éq. 3)"},
+      {t:"fonctions de masse — éq. (4)", body:"<p>Chaque confiance raffinée devient une fonction de masse de Dempster–Shafer sur {feu, ¬feu, Θ}, où le coefficient de fiabilité r<sub>m</sub> décide de la part de masse <i>engagée</i> vs tenue dans l'ignorance (Θ). Un capteur bon marché a simplement moins de masse engagée.</p><div class='eq'>m(F) = r·π̂ &nbsp;&nbsp; m(¬F) = r·(1−π̂) &nbsp;&nbsp; m(Θ) = 1 − r</div>", file:"src/decisional/evidential_fusion.py — mass_function"},
+      {t:"fusion consciente des conflits — éq. (5)", body:"<p>Les masses se plient par paires (c → s → d). Avant chaque combinaison, la divergence de croyance de Jousselme entre la masse fusionnée courante et la modalité suivante est calculée : divergence <b>faible</b> → somme orthogonale de Dempster (l'accord amplifie la croyance) ; divergence <b>forte</b> (&gt; 0,3) → moyenne pondérée prudente (jamais de division par ≈0).</p><div class='eq'>m⊕ = m₁⊕m₂ normalisée par 1−K, avec repli quand K → 1</div>", file:"src/decisional/evidential_fusion.py — conflict_aware_fuse"},
+      {t:"seuil + hystérésis", body:"<p>Si la m(F) fusionnée &gt; τ, le tick est une alarme brute. La boucle exige <b>2 ticks consécutifs</b> d'alarme brute pour <i>confirmer</i> (hystérésis), verrouille jusqu'à acquittement humain, puis respecte un retour au calme de 300 s avant réarmement.</p>", file:"src/pipeline/fusion_loop.py — politique alarm_hysteresis"},
+      {t:"publication + couche de supervision", body:"<p>Les alarmes confirmées sont publiées sur <code>wildfire/alarm/&lt;cell&gt;</code> via MQTT/TLS — JSON ≤ 8 ko, champs volumineux supprimés entiers plutôt que tronqués — et poussées vers la file de supervision avec une suggestion de re-tasking UAV quand le flux drone (d) n'était pas parmi les modalités actives.</p>", file:"src/edge/mqtt_client.py + fusion_loop (supervisory_queue)"}]},
+  play:{h:"<span class='tick'>03</span> · Simulateur de fusion en direct — les vraies math du décisionnel",
+    lead:"Ceci est un portage JavaScript fidèle de <code>src/decisional/evidential_fusion.py</code> : l'éq. (4) construit une fonction de masse par modalité, la divergence de Jousselme choisit entre la règle de Dempster et la moyenne pondérée prudente, et la croyance fusionnée en « feu » est comparée à τ. Bougez les curseurs et regardez la règle basculer.",
+    cam:"🎥 c — Caméra PTZ RGB", iiot:"🌡️ s — Nœud IIoT (temp/PM/gaz)", lwir:"🚁 d — Flux LWIR / UAV",
+    pi:"confiance brute π", r:"fiabilité r", tau:"seuil d'alarme τ", div:"seuil de bascule (divergence)",
+    noise:"🎲 bruit de capteurs & re-fusion",
+    massesTitle:"Masses par modalité — éq. (4) : m(F)=r·π, m(¬F)=r·(1−π), m(Θ)=1−r",
+    fusedTitle:"Croyance fusionnée (pliage conscient des conflits, c → s → d)",
+    alarmOn:"🔥 ALERTE INCENDIE — fusion m(F)={f} > τ={t}", alarmOff:"SURVEILLANCE — m(F)={f} ≤ τ={t}",
+    foldDempster:"pli <span class='safe'>Dempster</span> — D={d}", foldWeighted:"pli <span class='hit'>moyenne pondérée</span> — D={d}",
+    names:{c:"🎥 caméra (c)", s:"🌡️ IIoT (s)", d:"🚁 LWIR (d)"},
+    note:"Essayez la astuce centrale du papier : π<sub>c</sub>=0.95 avec r<sub>c</sub>=0.9 et π<sub>s</sub>=0.05 avec r<sub>s</sub>=0.9 — <b>conflit maximal</b>. La règle de Dempster seule diviserait par ≈0 ; la porte de divergence bascule vers la moyenne pondérée et le système rapporte une incertitude honnête au lieu d'un verdict halluciné. Deux modalités <i>concordantes</i> de confiance moyenne (π≈0.7, r≈0.8) fusionnent au-delà de τ=0.78 — cette amplification est ce que la multimodalité achète : une alarme plus tôt."},
+  gate:{h:"<span class='tick'>04</span> · La porte d'entropie — éq. (3), visualisée",
+    lead:"Dans le transformer contextuel, l'attention entre tokens de modalité est multipliée par une porte apprise <code>g<sub>ij</sub> = σ(w·[H<sub>i</sub>, H<sub>j</sub>] + b)</code> amorcée par l'entropie binaire <code>H(π) = −π ln π − (1−π) ln(1−π)</code> de la confiance de chaque modalité. La heatmap ci-dessous utilise les poids de porte illustratifs de cette démo (la porte de production est apprise — <code>src/contextual/gated_transformer.py</code>). Confiance faible ⇒ entropie haute ⇒ porte plus <i>fermée</i>.",
+    piC:"π (caméra)", piS:"π (IIoT)", piD:"π (LWIR)",
+    heatTitle:"Poids de porte g<sub>ij</sub> = σ(1.2·H<sub>i</sub> + 1.2·H<sub>j</sub> − 1.6)",
+    entConf:"— confiante", entUnc:"— incertaine, atténuée",
+    note:"H culmine à π=0.5 (incertitude maximale). Une modalité qui « ne sait pas » pèse le moins sur tous les autres tokens — toute l'idée de l'éq. (3) en une phrase.",
+    fullNote:"L'attention complète est <code>A<sub>ij</sub> = softmax(Q<sub>i</sub>K<sub>j</sub>ᵀ/√d<sub>k</sub>) · σ(g<sub>ij</sub>)</code> — similarité de contenu fois cette porte d'incertitude, empilée sur 4 couches avec résidus + LayerNorm, puis une tête 3-FC + sigmoïde sort la confiance raffinée π̂<sub>m</sub> envoyée à la fusion ci-dessous."},
+  data:{h:"<span class='tick'>05</span> · Benchmarks & la règle anti-fuite",
+    lead:"Trois benchmarks publics couvrent les trois géométries de capteurs. Une règle les gouverne tous : <b style='color:var(--text)'>couper par événement, jamais par frame</b> — un découpage aléatoire au niveau frame laisse les frames voisines d'un même feu fuir entre train et test et gonfle toutes les métriques.",
+    cards:[
+      {col:"var(--green)", t:"FLAME (RGB+LWIR aérien)", nums:"39 375 frames train + 8 617 test · 2 003 masques de segmentation",
+       b:"Brûlages dirigés en tas depuis des UAV. IEEE DataPort (compte gratuit, licence). FLAME2 offre 53 451 paires RGB/IR enregistrées — la co-registration dont le double flux a vraiment besoin."},
+      {col:"var(--amber)", t:"D-Fire (RGB au sol)", nums:"21 527 images · 1 164 feu · 5 867 fumée seule · 4 658 les deux · 9 838 négatives",
+       b:"Boîtes au format YOLO, pré-découpé. Téléchargement le plus rapide (git clone) — toujours le premier test bout-en-bout. Les ids de classe sont vérifiés, pas supposés."},
+      {col:"#6b3fa0", t:"FIgLib (PTZ à vue fixe)", nums:"24 800 frames · 315 séquences · 101 caméras / 30 stations (2016–2021)",
+       b:"~40 min avant/après ignition, ~60 s d'écart — du vrai timing pour la métrique d'horizon de détection. Ses splits officiels de validation croisée sont déjà au niveau séquence."}],
+    leak:"<b style='color:var(--red)'>Le contrôle des fuites est un invariant testé, pas un espoir :</b> <code>scripts/build_splits.py</code> groupe les frames par ID de brûlage/vol/séquence, stratifie au niveau des groupes (feu &gt; fumée &gt; rien) en 70/15/15, et <code>tests/test_splits_leakage.py</code> affirme <b style='color:var(--text)'>zéro chevauchement d'IDs d'événements</b> entre les splits."},
+  code:{h:"<span class='tick'>06</span> · Où tout vit dans le dépôt",
+    lead:"L'ordre de construction suit le cahier des charges : données → perceptuel → contextuel → décisionnel → boucle → benchmark. Chaque lacune du papier est comblée par une <code>ASSUMPTION</code> étiquetée, jamais en silence.",
+    trees:[
+      {t:"📂 src/perceptual — les yeux et le nez", items:[
+        "<span class='f'>cbam.py</span> <span class='s'>— §4.1</span> · attention canal + spatiale, insérée après chaque bloc C2f des deux flux.",
+        "<span class='f'>dual_stream_yolo.py</span> <span class='s'>— §4.2</span> · YOLOv8n dupliqué en stems RGB/LWIR → pile précoce parallèle → fusion concat de canaux + conv 1×1 après le C2f du stage-2 (hypothèse documentée) → P3–P5 + tête partagés, CBAM après chaque C2f. Construit sur les modules Ultralytics pour garder TAL & export compatibles.",
+        "<span class='f'>losses.py</span> <span class='s'>— §4.3, éq. (2)</span> · L<sub>det</sub> = λ₁·CIoU + λ₂·focal + λ₃·obj, avec λ₁=1.0, λ₂=0.5, λ₃=0.7, γ=1.5. La voie réelle réutilise le TAL d'Ultralytics (CIoU+DFL, BCE/focale) + une BCE d'objectness explicite.",
+        "<span class='f'>iiot_branch.py</span> <span class='s'>— §4.4</span> · IsolationForest sur [temp, HR, PM2.5, PM10, gaz MQ-2] ; z-score, fenêtre d'alignement ±30 s, jamais de remplissage des pannes."]},
+      {t:"📂 src/contextual — le raffineur", items:[
+        "<span class='f'>positional.py</span> <span class='s'>— §5.1</span> · encodage temporel sinusoïdal sur la fenêtre de 32 frames + encodage spatial MLP des boîtes.",
+        "<span class='f'>gated_transformer.py</span> <span class='s'>— §5.2, éq. (3)</span> · attention croisée 4 couches à porte d'entropie (d_model 256, 8 têtes) + tête 3-FC/sigmoïde → π̂<sub>m</sub> raffiné. <span class='f'>ConcatFusionEncoder</span> est la variante d'ablation du Tableau VI."]},
+      {t:"📂 src/decisional — le juge", items:[
+        "<span class='f'>evidential_fusion.py</span> <span class='s'>— §6, éq. (4)–(5)</span> · fonctions pures : fonctions de masse, somme orthogonale de Dempster avec garde de conflit total, divergence de croyance de Jousselme, pliage conscient des conflits, et alarme τ. Les fiabilités r<sub>m</sub> et τ ne sont <b>jamais codées en dur aux sites d'appel</b> — chargées des configs, calibrées par <span class='f'>calibrate_decisional.py</span>."]},
+      {t:"📂 src/pipeline + src/edge — la boucle et la radio", items:[
+        "<span class='f'>fusion_loop.py</span> <span class='s'>— §8, Algorithme 1</span> · <code>fusion_tick</code> (raffine → masse → fusionne → seuil → publie) enveloppé par <code>FusionLoop</code> qui implémente les politiques opérationnelles : perte de paquets, dérive d'horloge, verrou d'hystérésis + retour au calme, suggestion de re-tasking UAV.",
+        "<span class='f'>export_onnx.py / trt_quantize.py / mqtt_client.py</span> <span class='s'>— §7.1–7.3</span> · export opset 17, moteur INT8 construit sur le Jetson uniquement avec une liste de calibration proportionnelle de 5 000 images, MQTT/TLS au budget 8 ko."]},
+      {t:"📂 scripts + benchmark + tests — les preuves", items:[
+        "<span class='f'>get_datasets.py · build_splits.py · harmonize_labels.py</span> <span class='s'>— §3</span> · acquisition, splits anti-fuite, unification de taxonomie.",
+        "<span class='f'>run_field_sim.py</span> <span class='s'>— §9</span> · rejeu : séquences étiquetées comme flux caméra + rampe IIoT synthétique qui précède ou suit l'ignition → métrique d'horizon de détection, clairement étiquetée synthétique.",
+        "<span class='f'>benchmark/metrics.py · run_benchmark.py · ablation.py</span> <span class='s'>— §10–§11</span> · P/R/F1, mAP@.5 via val Ultralytics, FPR à dénominateur explicite, traces de latence brutes, IC bootstrap ≥1000 rééchantillonnages, matrices de confusion par classe, et les quatre ablations du Tableau VI avec IC sur les deltas.",
+        "<span class='f'>tests/</span> · 49 tests dont l'assertion anti-fuite et chaque politique de fusion."]}]},
+  res:{h:"<span class='tick'>07</span> · Ce que veulent dire les chiffres",
+    lead:"Cibles rapportées par le papier vs ce que ce dépôt calcule. Tout ce qui est synthétique dans cette build est étiqueté synthétique — aucun emprunt silencieux de chiffres publiés.",
+    head:["Métrique","Définition","Le papier rapporte","Ce dépôt"],
+    rows:[
+      ["P / R / F1, mAP@.5","<span class='mono'>convention IoU 0.5, val() Ultralytics</span>","Tableau IV","calculé par checkpoint + P/R/F1 image avec IC bootstrap + matrices de confusion par classe"],
+      ["FPR / 24 h","<span class='mono'>fausses alarmes ÷ fenêtres sans feu surveillées (dénominateur journalisé)</span>","&lt; 2 % (nombre de fenêtres non précisé)","dénominateur explicite par conception"],
+      ["Horizon de détection","<span class='mono'>temps_monitoring_existant − temps_alarme (par événement)</span>","<span class='mono'>86 s ± 14 s (N = 3 !)</span>","le rejeu de terrain rapporte moyenne ± écart-type + IC, étiqueté SYNTHÉTIQUE"],
+      ["Latence forward","<span class='mono'>capture → alarme publiée vs forward brut</span>","<span class='mono'>74 ms (RGB+LWIR) · 312 ms bout-en-bout</span>","traces brutes par appel sauvegardées (pas seulement moyenne/p95)"],
+      ["Seuil d'alarme τ","<span class='mono'>m(F) fusionnée &gt; τ</span>","<span class='mono'>0.78 (leur jeu de validation)</span>","recalibré par recherche sur grille : FPR min à rappel ≥ cible"],
+      ["Ablations","<span class='mono'>sans-CBAM · concat-vs-transformer · moyenne-pondérée-seule · dempster-seul</span>","Deltas du Tableau VI, sans significativité","deltas + IC bootstrap (la correction)"]],
+    note:"Résultat de cohérence du rejeu synthétique de cette build : deux modalités <i>concordantes</i> de confiance moyenne fusionnent au-delà de τ là où chacune seule échoue (amplification de Dempster), tandis qu'une paire en conflit maximal est désamorcée en moyenne pondérée au lieu d'une division par ~0. C'est exactement le rôle de la règle consciente des conflits — et c'est testé unitairement."},
+  run:{h:"<span class='tick'>08</span> · Exécution",
+    lead1:"Le guide complet est dans le README du dépôt. La démo de 5 minutes sans données :",
+    lead2:"Voie données réelles (D-Fire d'abord — sans mur d'authentification) :"},
+  footer:{title:"Gates de reproductibilité avant de dire « reproduit » :",
+    items:["partitions exactes commises (split_manifest.csv par dataset) · assertion anti-fuite verte",
+           "labels harmonisés <i>et vérifiés contre les vrais fichiers de labels</i> · config d'entraînement journalisée par run",
+           "baselines réentraînées sur splits/augmentations identiques · IC + matrices de confusion rapportées",
+           "traces de latence brutes sauvegardées · politiques opérationnelles implémentées & documentées",
+           "chaque <code>ASSUMPTION</code> remplacée par une vraie valeur justifiée avant toute revendication externe"],
+    tagline:"FORFIRE-AI · explainer interactif mono-fichier · EN/FR/IT/AR · fonctionne hors ligne (Titillium Web retombe sur les polices système)"}
+},
+/* ============================================================ AR ==== */
+ar: {
+  dir:"rtl",
+  title:"FORFIRE-AI — نظام متعدد الوسائط للإنذار المبكر بحرائق الغابات",
+  topbar:{left:"<b>FORFIRE-AI</b> · تحسين الوقاية من حرائق الغابات وكشفها بتقنيات الذكاء الاصطناعي",
+          right:"غابات المناطق الساحلية تونس–إيطاليا"},
+  brand:{strap:"نظام إنذار مبكر متعدد الوسائط لحرائق الغابات — ثلاثة مستويات، أربع طبقات، إنذار واحد قابل للتبرير."},
+  nav:{arch:"البنية المعمارية", algo:"الخوارزمية 1", play:"مختبر الدمج التفاعلي", gate:"بوابة الإنتروبيا",
+       data:"مجموعات البيانات", code:"خريطة الشيفرة", res:"النتائج", run:"التشغيل"},
+  hero:{sub:"تحسين الوقاية من حرائق الغابات وكشفها بتقنيات الذكاء الاصطناعي — حالة غابات المناطق الساحلية تونس–إيطاليا.",
+        tech:"<b>محوّل انتباه عابر للوسائط ببوابات إنتروبيا</b> (الطبقة السياقية) و<b>قاعدة دمستر–شافر واعية بالتعارض</b> (طبقة القرار) تدمج كاميرات RGB + LWIR مع عقد استشعار بيئية IIoT منخفضة التكلفة، وتعمل على جهاز من فئة Jetson، وتنشر الإنذارات عبر MQTT ضمن ميزانية 8 كيلوبايت."},
+  tags:{interactive:"كل ما يلي تفاعلي ويعمل دون اتصال بالإنترنت"},
+  contrib:[
+    {c:"c-green",  t:"1 · إدراك ثنائي المسار.", b:"YOLOv8n مكرر في مساري RGB وLWIR مع انتباه CBAM بعد كل كتلة C2f ودمج في منتصف العمود الفقري — كاشف واحد مشترك وعينان."},
+    {c:"c-purple", t:"2 · سياق ببوابة إنتروبيا.", b:"محوّل من 4 طبقات ينقّح درجات الثقة لكل وسيلة: الأدلة غير المؤكدة تُخفَّض <i>عبر البوابة</i> قبل أن تُلوِّث الدمج."},
+    {c:"c-orange", t:"3 · دمج واعٍ بالتعارض.", b:"كتل دمستر–شافر لكل وسيلة؛ عندما يرتفع تباعد المعتقدات الثنائي، تنتقل القاعدة <i>إلى متوسط مرجّح متحفظ</i> بدلاً من تضخيم التعارض."},
+    {c:"c-blue",   t:"4 · إنذار مبكر على الحافة.", b:"ONNX ← TensorRT INT8 على Jetson (74 ملّي ثانية RGB+LWIR)، إنذارات ≤ 8 كيلوبايت عبر MQTT/TLS، ومقياس <i>أفق الكشف</i> مقارنةً بالمراقبة التقليدية."}],
+  arch:{h:"<span class='tick'>01</span> · البنية المعمارية — انقر على أي طبقة",
+    lead:"أربع طبقات في ثلاثة مستويات. تتدفق الإشارات من اليسار إلى اليمين: تُكشف الوسائط الخام (الإدراكي)، ثم تُنقّح الثقة في السياق (السياقي)، ثم يُتَّخذ قرار الذهاب/التوقف القابل للتبرير (القراري). وطبقة الحافة/العمليات تحيط بالكل.",
+    flow:"🛰️ أجهزة الاستشعار <span class='arr'>⟶⟶</span> الإدراكي <span class='arr'>⟶⟶</span> السياقي <span class='arr'>⟶⟶</span> القراري <span class='arr'>⟶⟶</span> 🚨 إنذار",
+    edge:"<b>طبقة الحافة/العمليات (§7–§8):</b> تصدير ONNX (opset 17) ← TensorRT INT8 عبر <code>trtexec</code> على Jetson (أهداف الورقة: ≈4.2 غيغابايت ذاكرة، ≈74 ملّي ثانية RGB+LWIR / 36 ms RGB، 312 ملّي ثانية من البداية للنهاية) · MQTT/TLS بميزانية حمولة 8 كيلوبايت (الحقول الضخمة تُحذف كاملة ولا تُقتطع أبداً) · سياسات تشغيلية: سماحية توقّع 2 ثانية، تعطيل الوسيلة بعد فقدان نبضتين، إشارة إنذار تتطلب نبضتين متتاليتين، وتهدئة 300 ثانية بعد إزالة الإنسان للإنذار.",
+    tiers:[
+      {k:"الطبقة 1 · الاستشعار", name:"ما الذي يحدث هناك", items:[
+        ["كاميرا PTZ RGB","تحريك-إمالة-تكبير بزاوية ثابتة، العين الدائمة (هندسة FIgLib)"],
+        ["كاميرا LWIR / طائرة مسيّرة","تباين حراري + إعادة تكليف عند الطلب للتأكيد"],
+        ["عقد IIoT","حرارة · رطوبة · PM2.5 · PM10 · غاز MQ-2 — الأنف الذي يشم أحياناً أولاً"]],
+       detail:"<h4>طبقة الاستشعار</h4><p>ثلاث وسائل متكاملة. خلاصة الورقة الميدانية: منحدر IIoT أحياناً <b>يسبق</b> العمود البصري وأحياناً <b>يلحقه</b> — ولهذا بالضبط يجب أن تتسامح عملية الدمج مع الترتيبين (المحاكي الميداني يعرّض الإزاحة كمعيار حر).</p><span class='mono'>كل صورة/قراءة تُختم بطابع زمني UTC عند الالتقاط ← نافذة محاذاة ±30 ثانية (iiot_branch.align_reading)</span>"},
+      {k:"الطبقة 2 · الإدراكي", name:"الكشف على كل مسار", items:[
+        ["YOLOv8n ثنائي المسار","جذعان مكرران (RGB / LWIR) ← دمج concat+1×1 ← P3–P5 + رأس مشترك"],
+        ["CBAM في كل مكان","انتباه قنواتي + مكاني بعد كل كتلة C2f في المسارين"],
+        ["IsolationForest (IIoT)","درجة شذوذ على 5 خصائص بيئية ← قيمة شبيهة بالثقة في [0,1]"]],
+       detail:"<h4>الطبقة الإدراكية (§4)</h4><p>كاشف واحد وعينان. الجذعان منسوخان من yolov8n المدرّب مسبقاً (جذع LWIR يُهيَّأ من نسخة RGB)، ويُدمجان بعد كتلي C2f في المرحلة الثانية عبر وصل قنوات + التفاف 1×1 — <b>افتراض موثّق</b> لأن الورقة لم تحدّد عمق الدمج. دالة الخسارة هي معادلة (2): λ₁·CIoU + λ₂·focal + λ₃·obj (1.0 / 0.5 / 0.7، γ = 1.5)، مبنية على آلية TAL من Ultralytics مع BCE صريح لـ objectness.</p><span class='mono'>src/perceptual/{cbam,dual_stream_yolo,losses,iiot_branch}.py</span>"},
+      {k:"الطبقة 3 · السياقي", name:"تنقية الثقة", items:[
+        ["نافذة 32 إطاراً","ترميزات زمنية جيبية + ترميز مكاني MLP للصناديق"],
+        ["محوّل 4 طبقات ببوابة إنتروبيا","A_ij = softmax(QKᵀ/√d)·σ(g_ij)، وg مبذور بـ H(π)"],
+        ["رأس 3-FC + سيجمويد","يُخرج الثقة المنقّحة π̂_m لكل خانة وسيلة"]],
+       detail:"<h4>الطبقة السياقية (§5)</h4><p>درجات الكاشف الخام مشوشة ومنحازة لكل وسيلة. هذه الطبقة تنظر إلى جميع الرموز <i>معاً</i> — ضمن نافذة زمنية من 32 إطاراً — وتنقّح كل ثقة. البوابة تعني أن الوسيلة التي «لا تعرف» (π قريب من 0.5 ⇒ إنتروبيا عظمى) تزن أقل. هدف التدريب افتراض موثّق (BCE على مستوى النافذة، AdamW بمعدل 5e-4، 30 حقبة، توقف مبكر).</p><span class='mono'>src/contextual/{positional,gated_transformer}.py — شاهد الخريطة الحرارية أدناه</span>"},
+      {k:"الطبقة 4 · القراري", name:"قرار قابل للتبرير", items:[
+        ["دوال الكتلة (معادلة 4)","m(F)=r·π، m(¬F)=r·(1−π)، m(Θ)=1−r لكل وسيلة"],
+        ["الطيّ الواعي بالتعارض (معادلة 5)","قاعدة دمستر، لكن تباعد جوسلم > 0.3 ⇒ متوسط مرجّح متحفظ"],
+        ["عتبة τ + الاستقرار المتأخر","إنذار عند m(F) المدمجة > τ؛ نبضتان متتاليتان؛ تهدئة 300 ثانية"]],
+       detail:"<h4>الطبقة القرارية (§6)</h4><p>عدم اليقين يُحمل ولا يُرمى: جهل كل وسيلة هو الكتلة على Θ. قاعدة دمستر <b>تضخّم الأدلة المتفقة</b> (وسيلتان متوسطتا الثقة قد تتجاوزان τ حيث تفشل كل واحدة وحدها — وهذا آلية الإنذار المبكر) لكنها تنفجر عند التعارض الكلي — لذلك التراجع إلى متوسط مرجّح تحكمه فجوة التباعد. معاملات الموثوقية r<sub>c</sub> وr<sub>d</sub> وr<sub>s</sub> وτ تُبحث شبكياً على بيانات التحقق (أدنى معدل إنذار كاذب بشرط استدعاء ≥ الهدف) وتُحمَّل من <span class='mono'>configs/decisional_calibration.yaml</span> — وليست مكتوبة بشكل ثابت أبداً.</p><span class='mono'>src/decisional/evidential_fusion.py — جرّبها مباشرة في القسم 03</span>"}]},
+  algo:{h:"<span class='tick'>02</span> · كيف يعمل النبضة — الخوارزمية 1 خطوة بخطوة",
+    lead:"كل نبضة دمج (~مرة في كل نبضة استشعار) تنفّذ هذه السلسلة بالضبط. تنقّل بين الخطوات — كل خطوة تسمّي الملف الذي ينفّذها.",
+    prev:"← السابق", next:"التالي →",
+    steps:[
+      {t:"وصول الإطارات", body:"<p>ثلاث <code>ModalityFrame</code> تصل لهذه النبضة: الاسم (c/d/s)، علم النشاط، الأحداث المكتشفة Δ، الثقة الخام π، ومتّجه التمثيل. قبل الدمج تطبّق الحلقة السياسات التشغيلية: الوسيلة التي فاتتها نبضتان تُوسَم <b>غير نشطة</b> (سياسة فقد الحزم)، والإطارات التي انحرف طابعها الزمني أكثر من 2 ثانية تُستبعد (سياسة تزامن الساعة).</p>", file:"src/pipeline/fusion_loop.py — FusionLoop.tick + ModalityFrame"},
+      {t:"التنقية السياقية", body:"<p>تُكدَّس تمثيلات الوسائل النشطة كرموز. المحوّل ذو الطبقات الأربع ببوابات الإنتروبيا (معادلة 3) يلتقي عبرها — والوسائل غير المؤكدة تُخفَّض — ثم يُخرج رأس 3-FC + سيجمويد الثقات المنقّحة π̂<sub>m</sub>. رمز واحد لكل وسيلة نشطة هنا؛ وطبقة التدريب تُنمذجة إضافةً لذلك النافذة الزمنية من 32 إطاراً.</p>", file:"src/contextual/gated_transformer.py — ContextualEncoder (معادلة 3)"},
+      {t:"دوال الكتلة — معادلة (4)", body:"<p>كل ثقة منقّحة تصبح دالة كتلة دمستر–شافر على {حريق، ¬حريق، Θ}، حيث يقرّر معامل الموثوقية r<sub>m</sub> كمّ من الكتلة الاحتمالية <i>مُلتزَم</i> مقابل المحفوظ في جهل (Θ). الحساس الرخيص ببساطة لديه كتلة ملتزمة أقل.</p><div class='eq'>m(F) = r·π̂ &nbsp;&nbsp; m(¬F) = r·(1−π̂) &nbsp;&nbsp; m(Θ) = 1 − r</div>", file:"src/decisional/evidential_fusion.py — mass_function"},
+      {t:"الدمج الواعي بالتعارض — معادلة (5)", body:"<p>تُطوى الكتل ثنائياً (c → s → d). قبل كل دمج تُحسب درجة تباعد المعتقدات (جوسلم) بين الكتلة المدمجة الجارية والوسيلة التالية: تباعد <b>منخفض</b> ← المجموع المتعامد لدمستر (الاتفاق يضخّم المعتقد)؛ تباعد <b>مرتفع</b> (&gt; 0.3) ← متوسط مرجّح متحفظ (لا قسمة على ≈0 أبداً).</p><div class='eq'>m⊕ = m₁⊕m₂ مُعايَرة بـ 1−K، مع بديل عندما K → 1</div>", file:"src/decisional/evidential_fusion.py — conflict_aware_fuse"},
+      {t:"العتبة + الاستقرار المتأخر", body:"<p>إذا كانت m(F) المدمجة &gt; τ فهذه النبضة إنذار خام. تتطلب الحلقة <b>نبضتين متتاليتين</b> من الإنذار الخام <i>للتأكيد</i> (hysteresis)، وتظل مثبّتة حتى يزيلها الإنسان، ثم تهدئة 300 ثانية قبل إعادة التسليح.</p>", file:"src/pipeline/fusion_loop.py — سياسة alarm_hysteresis"},
+      {t:"النشر + طبقة الإشراف", body:"<p>الإنذارات المؤكدة تُنشر إلى <code>wildfire/alarm/&lt;cell&gt;</code> عبر MQTT/TLS — JSON ≤ 8 كيلوبايت، والحقول الضخمة تُحذف كاملة بدل اقتطاعها — وتُدفع إلى قائمة الإشراف مع اقتراح إعادة تكليف الطائرة المسيّرة كلما لم يكن مسار الطائرة (d) ضمن الوسائل النشطة.</p>", file:"src/edge/mqtt_client.py + fusion_loop (supervisory_queue)"}]},
+  play:{h:"<span class='tick'>03</span> · مختبر الدمج التفاعلي — رياضيات طبقة القرار الحقيقية",
+    lead:"هذا ترجمة أمينة إلى JavaScript للملف <code>src/decisional/evidential_fusion.py</code>: المعادلة (4) تبني دالة كتلة لكل وسيلة، وتباعد جوسلم يقرّر بين قاعدة دمستر والمتوسط المرجّح المتحفظ، ويُقارن المعتقد المدمج بـ«حريق» مقابل τ. حرّك المنزلقات وراقب تبديل القاعدة.",
+    cam:"🎥 c — كاميرا PTZ RGB", iiot:"🌡️ s — عقدة IIoT (حرارة/جزيئات/غاز)", lwir:"🚁 d — مسار LWIR / مسيّرة",
+    pi:"الثقة الخام π", r:"الموثوقية r", tau:"عتبة الإنذار τ", div:"عتبة تبديل التباعد",
+    noise:"🎲 ضوضاء استشعار وإعادة دمج",
+    massesTitle:"كتل لكل وسيلة — معادلة (4): m(F)=r·π، m(¬F)=r·(1−π)، m(Θ)=1−r",
+    fusedTitle:"المعتقد المدمج (طيّ واعٍ بالتعارض، c ← s ← d)",
+    alarmOn:"🔥 إنذار حريق — الدمج m(F)={f} > τ={t}", alarmOff:"مراقبة — m(F)={f} ≤ τ={t}",
+    foldDempster:"طيّ <span class='safe'>دمستر</span> — D={d}", foldWeighted:"طيّ <span class='hit'>متوسط مرجّح</span> — D={d}",
+    names:{c:"🎥 كاميرا (c)", s:"🌡️ IIoT (s)", d:"🚁 LWIR (d)"},
+    note:"جرّب حيلة الورقة الجوهرية: π<sub>c</sub>=0.95 مع r<sub>c</sub>=0.9 وπ<sub>s</sub>=0.05 مع r<sub>s</sub>=0.9 — <b>تعارض أقصى</b>. قاعدة دمستر وحدها ستقسم على ≈0؛ بوابة التباعد تنتقل إلى المتوسط المرجّح فيُبلغ النظام عن عدم يقين صادق بدلاً من حكم هلوسة. ووسيلتان <i>متفقتان</i> بثقة متوسطة (π≈0.7، r≈0.8) تندمجان تجاوزاً τ=0.78 — هذا التضخيم هو ما تشتريه تعدد الوسائل: إنذار أبكر."},
+  gate:{h:"<span class='tick'>04</span> · بوابة الإنتروبيا — معادلة (3) بصرياً",
+    lead:"داخل المحوّل السياقي، يُضرب الانتباه بين رموز الوسائل في بوابة متعلّمة <code>g<sub>ij</sub> = σ(w·[H<sub>i</sub>, H<sub>j</sub>] + b)</code> مبذورة بإنتروبيا الثنائية <code>H(π) = −π ln π − (1−π) ln(1−π)</code> لثقة كل وسيلة. الخريطة الحرارية أدناه تستخدم أوزان البوابة التوضيحية من هذه النسخة التجريبية (بوابة الإنتاج متعلّمة — <code>src/contextual/gated_transformer.py</code>). ثقة منخفضة ← إنتروبيا عالية ← بوابة تفتح <i>أقل</i>.",
+    piC:"π (كاميرا)", piS:"π (IIoT)", piD:"π (LWIR)",
+    heatTitle:"وزن البوابة g<sub>ij</sub> = σ(1.2·H<sub>i</sub> + 1.2·H<sub>j</sub> − 1.6)",
+    entConf:"— واثقة", entUnc:"— غير مؤكدة، مخفَّضة",
+    note:"تبلغ H ذروتها عند π=0.5 (أقصى عدم يقين). الوسيلة التي «لا تعرف» تزن أقل على كل رمز آخر — فكرة المعادلة (3) كلها في جملة واحدة.",
+    fullNote:"الانتباه الكامل هو <code>A<sub>ij</sub> = softmax(Q<sub>i</sub>K<sub>j</sub>ᵀ/√d<sub>k</sub>) · σ(g<sub>ij</sub>)</code> — تشابه المحتوى مضروباً في بوابة عدم اليقين هذه، متراكباً على 4 طبقات مع بقايا + LayerNorm، ثم يُخرج رأس 3-FC + سيجمويد الثقة المنقّحة π̂<sub>m</sub> المُغذّاة للدمج أدناه."},
+  data:{h:"<span class='tick'>05</span> · المقاييس المرجعية وقاعدة منع التسريب",
+    lead:"ثلاث مجموعات بيانات عامة تغطي هندسات الاستشعار الثلاث. وقاعدة واحدة تحكمها جميعاً: <b style='color:var(--text)'>القسمة حسب الحدث لا حسب الإطار</b> — القسمة العشوائية على مستوى الإطار تسمح لإطارات متجاورة من الحريق نفسه بالتسريب بين التدريب والاختبار وتضخّم كل المقاييس.",
+    cards:[
+      {col:"var(--green)", t:"FLAME (RGB+LWIR جوي)", nums:"39,375 إطار تدريب + 8,617 اختبار · 2,003 أقنعة تجزئة",
+       b:"حرق مكدّس موجّه من طائرات مسيّرة. IEEE DataPort (حساب مجاني، ترخيص). ويوفّر FLAME2 53,451 زوج RGB/IR مسجّل — التوافق المكاني الذي يحتاجه المسار المزدوج فعلاً."},
+      {col:"var(--amber)", t:"D-Fire (RGB أرضي)", nums:"21,527 صورة · 1,164 حريق · 5,867 دخان فقط · 4,658 كلاهما · 9,838 سالبة",
+       b:"صناديق بصيغة YOLO، مقسّمة مسبقاً. أسرع تنزيل (git clone مباشر) — دائماً أول اختبار من البداية للنهاية. معرّفات الفئات تُتحقق ولا تُفترض."},
+      {col:"#6b3fa0", t:"FIgLib (PTZ بزاوية ثابتة)", nums:"24,800 إطار · 315 سلسلة · 101 كاميرا / 30 محطة (2016–2021)",
+       b:"~40 دقيقة قبل/بعد الاشتعال، بفاصل ~60 ثانية — توقيت حقيقي لمقياس أفق الكشف. مقاطع التحقق المتقاطع الرسمية بمستوى السلسلة أصلاً."}],
+    leak:"<b style='color:var(--red)'>ضبط التسريب ثابت مُختبَر وليس أمنية:</b> <code>scripts/build_splits.py</code> يجمع الإطارات حسب معرّف الحرق/الرحلة/السلسلة، ويطبّق التقسيم الطبقي على مستوى المجموعة (حريق &gt; دخان &gt; لا شيء) بنسبة 70/15/15، و<code>tests/test_splits_leakage.py</code> يؤكّد <b style='color:var(--text)'>صفر تداخل في معرّفات الأحداث</b> بين الأقسام."},
+  code:{h:"<span class='tick'>06</span> · أين يسكن كل شيء في المستودع",
+    lead:"ترتيب البناء يتبع المواصفة: البيانات ← الإدراكي ← السياقي ← القراري ← الحلقة ← القياس. كل فجوة في الورقة تُملأ بـ<code>ASSUMPTION</code> موسومة ولا يتم ذلك بصمت أبداً.",
+    trees:[
+      {t:"📂 src/perceptual — العينان والأنف", items:[
+        "<span class='f'>cbam.py</span> <span class='s'>— §4.1</span> · انتباه قنواتي + مكاني، يُدرَج بعد كل كتلة C2f في المسارين.",
+        "<span class='f'>dual_stream_yolo.py</span> <span class='s'>— §4.2</span> · YOLOv8n مكرر في جذعين RGB/LWIR ← كومة مبكرة متوازية ← دمج وصل قنوات + التفاف 1×1 بعد C2f المرحلة الثانية (افتراض موثّق) ← P3–P5 + رأس مشترك، مع CBAM بعد كل C2f. مبني على وحدات Ultralytics نفسها ليبقى TAL والتصدير متوافقين.",
+        "<span class='f'>losses.py</span> <span class='s'>— §4.3، معادلة (2)</span> · L<sub>det</sub> = λ₁·CIoU + λ₂·focal + λ₃·obj بقيم λ₁=1.0، λ₂=0.5، λ₃=0.7، γ=1.5. المسار الحقيقي يعيد استخدام TAL من Ultralytics (CIoU+DFL، BCE/focal) + BCE صريح لـ objectness.",
+        "<span class='f'>iiot_branch.py</span> <span class='s'>— §4.4</span> · IsolationForest على [حرارة، رطوبة، PM2.5، PM10، غاز MQ-2]؛ تطبيع z، نافذة محاذاة ±30 ثانية، وانقطاعات لا تُسدّ أبداً بالتمديد."]},
+      {t:"📂 src/contextual — المنقّي", items:[
+        "<span class='f'>positional.py</span> <span class='s'>— §5.1</span> · ترميز زمني جيبي على نافذة 32 إطاراً + ترميز مكاني MLP للصناديق.",
+        "<span class='f'>gated_transformer.py</span> <span class='s'>— §5.2، معادلة (3)</span> · انتباه عابر للوسائط بأربع طبقات ببوابات إنتروبيا (d_model 256، 8 رؤوس) + رأس 3-FC/سيجمويد ← π̂<sub>m</sub> منقّحة. و<span class='f'>ConcatFusionEncoder</span> هو بديل تجربة الإحالة في الجدول السادس."]},
+      {t:"📂 src/decisional — القاضي", items:[
+        "<span class='f'>evidential_fusion.py</span> <span class='s'>— §6، معادلتا (4)–(5)</span> · دوال صرفة: دوال الكتلة، المجموع المتعامد لدمستر مع حارس التعارض الكلي، تباعد المعتقدات (جوسلم)، الطيّ الواعي بالتعارض، وإنذار τ. الموثوقيات r<sub>m</sub> وτ <b>ليستا مكتوبتين بشكل ثابت في مواضع الاستدعاء أبداً</b> — بل تُحمَّلان طبقياً من الإعدادات، وتُعايرَنان بواسطة <span class='f'>calibrate_decisional.py</span>."]},
+      {t:"📂 src/pipeline + src/edge — الحلقة والراديو", items:[
+        "<span class='f'>fusion_loop.py</span> <span class='s'>— §8، الخوارزمية 1</span> · <code>fusion_tick</code> (تنقية ← كتلة ← دمج ← عتبة ← نشر) مغلّفة بـ <code>FusionLoop</code> التي تنفّذ السياسات التشغيلية: فقد الحزم، انحراف الساعة، مثبّت الاستقرار المتأخر + التهدئة، واقتراح إعادة تكليف المسيّرة.",
+        "<span class='f'>export_onnx.py / trt_quantize.py / mqtt_client.py</span> <span class='s'>— §7.1–7.3</span> · تصدير opset 17، بناء محرك INT8 على Jetson فقط مع قائمة معايرة تناسبية من 5,000 صورة، وMQTT/TLS بميزانية 8 كيلوبايت."]},
+      {t:"📂 scripts + benchmark + tests — الأدلة", items:[
+        "<span class='f'>get_datasets.py · build_splits.py · harmonize_labels.py</span> <span class='s'>— §3</span> · الاكتساب، الأقسام الآمنة من التسريب، توحيد التصنيف.",
+        "<span class='f'>run_field_sim.py</span> <span class='s'>— §9</span> · إعادة تشغيل: سلاسل موسومة كتدفق كاميرا + منحدر IIoT تخليقي يسبق الاشتعال أو يلحقه ← مقياس أفق الكشف، موسوم بوضوح أنه تخليقي.",
+        "<span class='f'>benchmark/metrics.py · run_benchmark.py · ablation.py</span> <span class='s'>— §10–§11</span> · P/R/F1، mAP@.5 عبر val من Ultralytics، معدل إنذار كاذب بمقام صريح، أثر زمني خام، فواصل ثقة bootstrap بعدد ≥1000 إعادة سحب، مصفوفات التباس لكل فئة، والتجارب الإحالة الأربع للجدول السادس مع فواصل ثقة على الفروق.",
+        "<span class='f'>tests/</span> · 49 اختباراً بينها تأكيد عدم التسريب وكل سياسات الدمج."]}]},
+  res:{h:"<span class='tick'>07</span> · ماذا تعني الأرقام",
+    lead:"أهداف الورقة المُبلَّغة مقابل ما يحسبه هذا المستودع. كل ما هو تخليقي في هذه النسخة موسوم بأنه تخليقي — لا استعارة صامتة لأرقام منشورة.",
+    head:["المقياس","التعريف","تُبلّغه الورقة","هذا المستودع"],
+    rows:[
+      ["P / R / F1، mAP@.5","<span class='mono'>اصطلاح IoU 0.5، val() من Ultralytics</span>","الجدول الرابع","يُحسب لكل نسخة تدريب + P/R/F1 على مستوى الصورة مع فواصل ثقة bootstrap + مصفوفات التباس لكل فئة"],
+      ["معدل الإنذار الكاذب / 24 ساعة","<span class='mono'>الإنذارات الكاذبة ÷ النوافذ الخالية من الحريق المرصودة (المقام يُسجَّل)</span>","&lt; 2% (عدد النوافذ غير محدّد)","المقام صريح بحكم التصميم"],
+      ["أفق الكشف","<span class='mono'>زمن_المراقبة_التقليدية − زمن_الإنذار (لكل حدث)</span>","<span class='mono'>86 ثانية ± 14 (N = 3!)</span>","إعادة التشغيل الميداني تُبلّغ المتوسط ± الانحراف + فاصل الثقة، موسوم بأنه تخليقي"],
+      ["زمن الاستدلال","<span class='mono'>من الالتقاط إلى نشر الإنذار مقابل الاستدلال الخام</span>","<span class='mono'>74 ملّي ثانية (RGB+LWIR) · 312 للنهاية</span>","الأثر الزمني الخام لكل استدعاء يُحفَظ (لا المتوسط فقط)"],
+      ["عتبة الإنذار τ","<span class='mono'>m(F) المدمجة &gt; τ</span>","<span class='mono'>0.78 (بيانات تحققهم)</span>","يُعاد معايرته بحثاً شبكياً: أدنى إنذار كاذب بشرط استدعاء ≥ الهدف"],
+      ["تجارب الإحالة","<span class='mono'>بدون-CBAM · concat مقابل transformer · متوسط مرجّح فقط · دمستر فقط</span>","فروق الجدول السادس دون دلالة إحصائية","الفروق + فواصل ثقة bootstrap (الإصلاح)"]],
+    note:"نتيجة تماسك من إعادة التشغيل التخليقية لهذه النسخة: وسيلتان <i>متفقتان</i> بثقة متوسطة تندمجان تجاوزاً τ حيث تفشل كل منهما وحدها (تضخيم دمستر)، بينما تُستأصل ثنائية التعارض الأقصى إلى متوسط مرجّح بدل قسمة على ~0. هذا بالضبط دور القاعدة الواعية بالتعارض — وهو مُختبَر وحدوياً."},
+  run:{h:"<span class='tick'>08</span> · التشغيل",
+    lead1:"الدليل الكامل في README للمستودع. العرض التوضيحي من 5 دقائق دون أي بيانات:",
+    lead2:"مسار البيانات الحقيقية (D-Fire أولاً — دون حاجز مصادقة):"},
+  footer:{title:"بوابات قابلية إعادة الإنتاج قبل وصف أي شيء بـ«مُعاد إنتاجه»:",
+    items:["الأقسام الدقيقة مودعة (split_manifest.csv لكل مجموعة بيانات) · تأكيد عدم التسريب أخضر",
+           "الوسوم موحّدة <i>ومتحقق منها مقابل ملفات الوسوم الحقيقية</i> · إعداد التدريب مُسجَّل لكل تجربة",
+           "النماذج الأساسية مُعيد التدريب بنفس الأقسام/التحسينات · فواصل الثقة ومصفوفات التباس مُبلَّغة",
+           "الأثر الزمني الخام محفوظ · السياسات التشغيلية منفّذة وموثّقة",
+           "كل <code>ASSUMPTION</code> مستبدلة بقيمة حقيقية مبرَّرة قبل أي ادعاء خارجي"],
+    tagline:"FORFIRE-AI · شرح تفاعلي في ملف واحد · EN/FR/IT/AR · يعمل دون اتصال (Titillium Web يرجع لخطوط النظام)"}
+},
+/* ============================================================ IT ==== */
+it: {
+  dir:"ltr",
+  title:"FORFIRE-AI — Sistema multimodale di allerta precoce per incendi boschivi",
+  topbar:{left:"<b>FORFIRE-AI</b> · Ottimizzazione della Prevenzione e del Rilevamento degli Incendi Boschivi tramite l'IA",
+          right:"foreste delle zone costiere Tunisia–Italia"},
+  brand:{strap:"Sistema multimodale di allerta precoce per incendi boschivi — tre livelli, quattro strati, un allarme difendibile."},
+  nav:{arch:"Architettura", algo:"Algoritmo 1", play:"Simulatore di fusione", gate:"Porta di entropia",
+       data:"Dataset", code:"Mappa del codice", res:"Risultati", run:"Esecuzione"},
+  hero:{sub:"Ottimizzazione della Prevenzione e del Rilevamento degli Incendi Boschivi tramite le tecniche di Intelligenza Artificiale — caso delle foreste delle zone costiere Tunisia–Italia.",
+        tech:"Un <b>transformer cross-modale con porta di entropia</b> (livello contestuale) e una <b>regola di Dempster–Shafer consapevole dei conflitti</b> (livello decisionale) fondono telecamere RGB + LWIR con nodi IIoT ambientali a basso costo, girano su un dispositivo edge di classe Jetson e pubblicano allarmi via MQTT entro un budget di 8 kB."},
+  tags:{interactive:"tutto ciò che segue è interattivo e funziona offline"},
+  contrib:[
+    {c:"c-green",  t:"1 · Percezione a doppio flusso.", b:"YOLOv8n duplicato in steli RGB e LWIR, attenzione CBAM dopo ogni blocco C2f, fusione a metà backbone — un rilevatore condiviso, due occhi."},
+    {c:"c-purple", t:"2 · Contesto con porta di entropia.", b:"Un transformer a 4 livelli affina le confidenze per modalità: le evidenze incerte vengono <i>attenuate</i> prima di poter contaminare la fusione."},
+    {c:"c-orange", t:"3 · Fusione consapevole dei conflitti.", b:"Massee di Dempster–Shafer per modalità; quando la divergenza di credenza a coppie è alta, la regola <i>passa a una media ponderata prudente</i> invece di amplificare il conflitto."},
+    {c:"c-blue",   t:"4 · Allerta precoce su edge.", b:"ONNX → TensorRT INT8 su Jetson (74 ms RGB+LWIR), allarmi ≤ 8 kB via MQTT/TLS e una metrica di <i>orizzonte di rilevamento</i> rispetto al monitoraggio tradizionale."}],
+  arch:{h:"<span class='tick'>01</span> · Architettura — clicca su qualsiasi livello",
+    lead:"Quattro strati in tre livelli. I segnali fluiscono da sinistra a destra: le modalità grezze vengono rilevate (percettivo), la confidenza viene raffinata nel contesto (contestuale) e viene presa una decisione go/no-go difendibile (decisionale). Uno strato edge/ops avvolge il tutto.",
+    flow:"🛰️ sensori <span class='arr'>⟶⟶</span> percettivo <span class='arr'>⟶⟶</span> contestuale <span class='arr'>⟶⟶</span> decisionale <span class='arr'>⟶⟶</span> 🚨 allarme",
+    edge:"<b>Strato edge / ops (§7–§8):</b> esportazione ONNX (opset 17) → TensorRT INT8 via <code>trtexec</code> sul Jetson (obiettivi dell'articolo: ≈4,2 GB residenti, ≈74 ms RGB+LWIR / 36 ms RGB, 312 ms end-to-end) · MQTT/TLS con un budget di 8 kB (i campi voluminosi vengono scartati interi, mai troncati) · politiche operative: tolleranza di sincronizzazione 2 s, modalità inattiva dopo 2 heartbeat persi, isteresi d'allarme di 2 tick consecutivi, cooldown di 300 s dopo l'acquisizione umana.",
+    tiers:[
+      {k:"Livello 1 · Sensori", name:"Cosa c'è là fuori", items:[
+        ["Telecamera PTZ RGB","pan-tilt-zoom a vista fissa, l'occhio sempre attivo (geometria FIgLib)"],
+        ["Telecamera LWIR / UAV","contrasto termico + ri-assegnazione su richiesta per conferma"],
+        ["Nodi IIoT","temperatura · UR · PM2.5 · PM10 · gas MQ-2 — il naso che a volte fiuta per primo"]],
+       detail:"<h4>Strato di sensori</h4><p>Tre modalità complementari. Il riscontro sul campo dell'articolo: la rampa IIoT a volte <b>anticipa</b> il pennacchio visivo e a volte lo <b>segue</b> — ecco perché la fusione deve tollerare entrambi gli ordini (la simulazione espone l'offset come parametro libero).</p><span class='mono'>ogni frame/lettura riceve un timestamp UTC alla cattura → finestra di allineamento ±30 s (iiot_branch.align_reading)</span>"},
+      {k:"Livello 2 · Percettivo", name:"Rilevare su ogni flusso", items:[
+        ["YOLOv8n a doppio flusso","steli duplicati (RGB / LWIR) → fusione concat+1×1 → P3–P5 + testa condivisi"],
+        ["CBAM ovunque","attenzione canale + spaziale dopo ogni blocco C2f di entrambi i flussi"],
+        ["IsolationForest (IIoT)","punteggio di anomalia su 5 variabili ambientali → valore di confidenza in [0,1]"]],
+       detail:"<h4>Livello percettivo (§4)</h4><p>Un rilevatore, due occhi. Gli steli sono copiati dal yolov8n pre-addestrato (lo stelo LWIR è inizializzato dalla copia RGB), fusi dopo i blocchi C2f dello stage-2 tramite concat di canali + conv 1×1 — un'<b>assunzione documentata</b>, l'articolo non indica mai la profondità di fusione. La loss è l'eq. (2) dell'articolo: λ₁·CIoU + λ₂·focal + λ₃·obj (1.0 / 0.5 / 0.7, γ = 1.5), mappata sul TAL di Ultralytics più una BCE esplicita di objectness.</p><span class='mono'>src/perceptual/{cbam,dual_stream_yolo,losses,iiot_branch}.py</span>"},
+      {k:"Livello 3 · Contestuale", name:"Raffinare la confidenza", items:[
+        ["Finestra di 32 frame","codifiche temporali sinusoidali + spaziali MLP dei box"],
+        ["Transformer a 4 livelli con porta di entropia","A_ij = softmax(QKᵀ/√d)·σ(g_ij), g innescato da H(π)"],
+        ["Testa 3-FC + sigmoide","emette le confidenze raffinate π̂_m per slot di modalità"]],
+       detail:"<h4>Livello contestuale (§5)</h4><p>I punteggi grezzi del rilevatore sono rumorosi e distorti per modalità. Questo livello guarda tutti i token <i>insieme</i> — in una finestra temporale di 32 frame — e affina ogni confidenza. La porta fa sì che una modalità che «non sa» (π vicino a 0,5 ⇒ entropia massima) pesi meno. L'obiettivo di addestramento è un'assunzione etichettata (BCE per finestra, AdamW 5e-4, 30 epoche, early stopping).</p><span class='mono'>src/contextual/{positional,gated_transformer}.py — vedi la heatmap interattiva sotto</span>"},
+      {k:"Livello 4 · Decisionale", name:"Decidere, in modo difendibile", items:[
+        ["Funzioni di massa (eq. 4)","m(F)=r·π, m(¬F)=r·(1−π), m(Θ)=1−r per modalità"],
+        ["Piegatura consapevole dei conflitti (eq. 5)","regola di Dempster, ma divergenza di Jousselme > 0,3 ⇒ media ponderata prudente"],
+        ["Soglia τ + isteresi","allarme se m(F) fusa > τ; 2 tick consecutivi; cooldown 300 s"]],
+       detail:"<h4>Livello decisionale (§6)</h4><p>L'incertezza viene portata avanti, non scartata: l'ignoranza di ogni modalità è la massa su Θ. La regola di Dempster <b>amplifica le evidenze concordi</b> (due modalità moderate possono superare τ dove ciascuna da sola fallisce — questo è il meccanismo di allerta precoce) ma esplode in conflitto totale — da qui il ripiego sulla media ponderata governato dalla divergenza. I coefficienti di affidabilità r<sub>c</sub>, r<sub>d</sub>, r<sub>s</sub> e τ sono cercati su griglia sui dati di validazione (FPR minimo a richiamo ≥ target) e caricati da <span class='mono'>configs/decisional_calibration.yaml</span> — mai hardcoded.</p><span class='mono'>src/decisional/evidential_fusion.py — provalo dal vivo nella sezione 03</span>"}]},
+  algo:{h:"<span class='tick'>02</span> · Come funziona un tick — l'Algoritmo 1, passo per passo",
+    lead:"Ogni tick di fusione (~una volta per battito del sensore) esegue esattamente questa sequenza. Scorri i passi — ciascuno nomina il file che lo implementa.",
+    prev:"← Prec.", next:"Avanti →",
+    steps:[
+      {t:"arrivo dei frame", body:"<p>Tre <code>ModalityFrame</code> arrivano per questo tick: nome (c/d/s), flag attivo, eventi rilevati Δ, confidenza grezza π e un vettore di embedding. Prima della fusione, il loop applica le politiche operative: una modalità che ha perso 2 heartbeat viene marcata <b>inattiva</b> (politica di perdita pacchetti), e i frame il cui timestamp di cattura deriva più di 2 s vengono scartati (politica di sincronizzazione orologio).</p>", file:"src/pipeline/fusion_loop.py — FusionLoop.tick + ModalityFrame"},
+      {t:"raffinamento contestuale", body:"<p>Gli embedding delle modalità attive sono impilati in token. Il transformer a 4 livelli con porta di entropia (eq. 3) li attraversa — le modalità incerte attenuate — e la testa 3-FC + sigmoide emette le confidenze raffinate π̂<sub>m</sub>. Un token per modalità attiva qui; il tier di addestramento modella inoltre la finestra temporale di 32 frame.</p>", file:"src/contextual/gated_transformer.py — ContextualEncoder (eq. 3)"},
+      {t:"funzioni di massa — eq. (4)", body:"<p>Ogni confidenza raffinata diventa una funzione di massa di Dempster–Shafer su {fuoco, ¬fuoco, Θ}, dove il coefficiente di affidabilità r<sub>m</sub> decide quanta massa di probabilità è <i>impegnata</i> vs tenuta nell'ignoranza (Θ). Un sensore economico ha semplicemente meno massa impegnata.</p><div class='eq'>m(F) = r·π̂ &nbsp;&nbsp; m(¬F) = r·(1−π̂) &nbsp;&nbsp; m(Θ) = 1 − r</div>", file:"src/decisional/evidential_fusion.py — mass_function"},
+      {t:"fusione consapevole dei conflitti — eq. (5)", body:"<p>Le masse si piegano a coppie (c → s → d). Prima di ogni combinazione, la divergenza di credenza di Jousselme tra la massa fusa corrente e la modalità successiva viene calcolata: divergenza <b>bassa</b> → somma ortogonale di Dempster (l'accordo amplifica la credenza); divergenza <b>alta</b> (&gt; 0,3) → media ponderata prudente (mai dividere per ≈0).</p><div class='eq'>m⊕ = m₁⊕m₂ normalizzata per 1−K, con ripiego quando K → 1</div>", file:"src/decisional/evidential_fusion.py — conflict_aware_fuse"},
+      {t:"soglia + isteresi", body:"<p>Se la m(F) fusa &gt; τ il tick è un allarme grezzo. Il loop richiede <b>2 tick consecutivi</b> di allarme grezzo per <i>confermare</i> (isteresi), resta bloccato finché un umano non lo scancella, poi un cooldown di 300 s prima del riarmo.</p>", file:"src/pipeline/fusion_loop.py — politica alarm_hysteresis"},
+      {t:"pubblicazione + livello di supervisione", body:"<p>Gli allarmi confermati sono pubblicati su <code>wildfire/alarm/&lt;cell&gt;</code> via MQTT/TLS — JSON ≤ 8 kB, i campi voluminosi scartati interi piuttosto che troncati — e inviati alla coda di supervisione con un suggerimento di ri-assegnazione UAV ogniqualvolta il flusso drone (d) non era tra le modalità attive.</p>", file:"src/edge/mqtt_client.py + fusion_loop (supervisory_queue)"}]},
+  play:{h:"<span class='tick'>03</span> · Simulatore di fusione dal vivo — le vere equazioni del decisionale",
+    lead:"Questo è un porting JavaScript fedele di <code>src/decisional/evidential_fusion.py</code>: l'eq. (4) costruisce una funzione di massa per modalità, la divergenza di Jousselme decide tra la regola di Dempster e la media ponderata prudente, e la credenza fusa in «fuoco» è confrontata con τ. Muovi gli slider e guarda la regola cambiare.",
+    cam:"🎥 c — Telecamera PTZ RGB", iiot:"🌡️ s — Nodo IIoT (temp/PM/gas)", lwir:"🚁 d — Flusso LWIR / UAV",
+    pi:"confidenza grezza π", r:"affidabilità r", tau:"soglia d'allarme τ", div:"soglia di commutazione (divergenza)",
+    noise:"🎲 rumore sensori & ri-fusione",
+    massesTitle:"Massee per modalità — eq. (4): m(F)=r·π, m(¬F)=r·(1−π), m(Θ)=1−r",
+    fusedTitle:"Credenza fusa (piegatura consapevole dei conflitti, c → s → d)",
+    alarmOn:"🔥 ALLARME INCENDIO — fusione m(F)={f} > τ={t}", alarmOff:"MONITORAGGIO — m(F)={f} ≤ τ={t}",
+    foldDempster:"piega <span class='safe'>Dempster</span> — D={d}", foldWeighted:"piega <span class='hit'>media ponderata</span> — D={d}",
+    names:{c:"🎥 camera (c)", s:"🌡️ IIoT (s)", d:"🚁 LWIR (d)"},
+    note:"Prova il trucco centrale dell'articolo: π<sub>c</sub>=0.95 con r<sub>c</sub>=0.9 e π<sub>s</sub>=0.05 con r<sub>s</sub>=0.9 — <b>conflitto massimo</b>. La regola di Dempster da sola dividerebbe per ≈0; la porta di divergenza passa alla media ponderata e il sistema riporta un'incertezza onesta invece di un verdetto allucinato. Due modalità <i>concordi</i> a confidenza media (π≈0.7, r≈0.8) si fondono oltre τ=0.78 — quell'amplificazione è ciò che compra la multimodalità: un allarme più precoce."},
+  gate:{h:"<span class='tick'>04</span> · La porta di entropia — eq. (3), visualizzata",
+    lead:"Nel transformer contestuale, l'attenzione tra token di modalità è moltiplicata per una porta appresa <code>g<sub>ij</sub> = σ(w·[H<sub>i</sub>, H<sub>j</sub>] + b)</code> innescata dall'entropia binaria <code>H(π) = −π ln π − (1−π) ln(1−π)</code> della confidenza di ogni modalità. La heatmap sotto usa i pesi illustrativi di questa build demo (la porta di produzione è appresa — <code>src/contextual/gated_transformer.py</code>). Bassa confidenza ⇒ alta entropia ⇒ porta più <i>chiusa</i>.",
+    piC:"π (camera)", piS:"π (IIoT)", piD:"π (LWIR)",
+    heatTitle:"Peso della porta g<sub>ij</sub> = σ(1.2·H<sub>i</sub> + 1.2·H<sub>j</sub> − 1.6)",
+    entConf:"— confidente", entUnc:"— incerta, attenuata",
+    note:"H culmina a π=0.5 (incertezza massima). Una modalità che «non sa» pesa meno su ogni altro token — tutta l'idea dell'eq. (3) in una frase.",
+    fullNote:"L'attenzione completa è <code>A<sub>ij</sub> = softmax(Q<sub>i</sub>K<sub>j</sub>ᵀ/√d<sub>k</sub>) · σ(g<sub>ij</sub>)</code> — similarità del contenuto per questa porta d'incertezza, impilata su 4 livelli con residui + LayerNorm, poi una testa 3-FC + sigmoide emette la confidenza raffinata π̂<sub>m</sub> inviata alla fusione sotto."},
+  data:{h:"<span class='tick'>05</span> · Benchmark e la regola anti-leakage",
+    lead:"Tre benchmark pubblici coprono le tre geometrie di sensori. Una regola li governa tutti: <b style='color:var(--text)'>dividere per evento, mai per frame</b> — lo split casuale a livello di frame lascia che frame adiacenti dello stesso incendio passino tra train e test gonfiando ogni metrica.",
+    cards:[
+      {col:"var(--green)", t:"FLAME (RGB+LWIR aereo)", nums:"39.375 frame train + 8.617 test · 2.003 maschere di segmentazione",
+       b:"Fuochi controllati in cumuli da UAV. IEEE DataPort (account gratuito, licenza). FLAME2 offre 53.451 coppie RGB/IR registrate — la co-registration che il doppio flusso vuole davvero."},
+      {col:"var(--amber)", t:"D-Fire (RGB da terra)", nums:"21.527 immagini · 1.164 fuoco · 5.867 solo fumo · 4.658 entrambi · 9.838 negative",
+       b:"Box in formato YOLO, già pre-splitto. Download più veloce (git clone) — sempre il primo test end-to-end. Gli id di classe sono verificati, non assunti."},
+      {col:"#6b3fa0", t:"FIgLib (PTZ a vista fissa)", nums:"24.800 frame · 315 sequenze · 101 telecamere / 30 stazioni (2016–2021)",
+       b:"~40 min prima/dopo l'innesco, ~60 s di distanza — timing reale per la metrica di orizzonte di rilevamento. Gli split ufficiali di cross-validazione sono già a livello di sequenza."}],
+    leak:"<b style='color:var(--red)'>Il controllo del leakage è un invariante testato, non una speranza:</b> <code>scripts/build_splits.py</code> raggruppa i frame per ID di bruciato/volo/sequenza, stratifica a livello di gruppo (fuoco &gt; fumo &gt; nulla) in 70/15/15, e <code>tests/test_splits_leakage.py</code> asserisce <b style='color:var(--text)'>zero sovrapposizione di ID evento</b> tra gli split."},
+  code:{h:"<span class='tick'>06</span> · Dove vive tutto nel repository",
+    lead:"L'ordine di costruzione segue la specifica: dati → percettivo → contestuale → decisionale → loop → benchmark. Ogni lacuna dell'articolo è colmata con un'<code>ASSUMPTION</code> etichettata, mai in silenzio.",
+    trees:[
+      {t:"📂 src/perceptual — gli occhi e il naso", items:[
+        "<span class='f'>cbam.py</span> <span class='s'>— §4.1</span> · attenzione canale + spaziale, inserita dopo ogni blocco C2f di entrambi i flussi.",
+        "<span class='f'>dual_stream_yolo.py</span> <span class='s'>— §4.2</span> · YOLOv8n duplicato in steli RGB/LWIR → pila precoce parallela → fusione concat di canali + conv 1×1 dopo il C2f dello stage-2 (assunzione documentata) → P3–P5 + testa condivisi, CBAM dopo ogni C2f. Costruito sui moduli Ultralytics per mantenere TAL & export compatibili.",
+        "<span class='f'>losses.py</span> <span class='s'>— §4.3, eq. (2)</span> · L<sub>det</sub> = λ₁·CIoU + λ₂·focal + λ₃·obj, con λ₁=1.0, λ₂=0.5, λ₃=0.7, γ=1.5. Il percorso reale riusa il TAL di Ultralytics (CIoU+DFL, BCE/focale) + una BCE esplicita di objectness.",
+        "<span class='f'>iiot_branch.py</span> <span class='s'>— §4.4</span> · IsolationForest su [temp, UR, PM2.5, PM10, gas MQ-2]; z-score, finestra di allineamento ±30 s, le interruzioni non vengono mai colmate."]},
+      {t:"📂 src/contextual — il raffinatore", items:[
+        "<span class='f'>positional.py</span> <span class='s'>— §5.1</span> · codifica temporale sinusoidale sulla finestra di 32 frame + codifica spaziale MLP dei box.",
+        "<span class='f'>gated_transformer.py</span> <span class='s'>— §5.2, eq. (3)</span> · attenzione cross-modale a 4 livelli con porta di entropia (d_model 256, 8 teste) + testa 3-FC/sigmoide → π̂<sub>m</sub> raffinata. <span class='f'>ConcatFusionEncoder</span> è la variante di ablation della Tabella VI."]},
+      {t:"📂 src/decisional — il giudice", items:[
+        "<span class='f'>evidential_fusion.py</span> <span class='s'>— §6, eq. (4)–(5)</span> · funzioni pure: funzioni di massa, somma ortogonale di Dempster con guardia sul conflitto totale, divergenza di credenza di Jousselme, la piegatura consapevole dei conflitti, e l'allarme τ. Le affidabilità r<sub>m</sub> e τ non sono <b>mai hardcoded nei siti di chiamata</b> — caricate a livelli dalle config, calibrate da <span class='f'>calibrate_decisional.py</span>."]},
+      {t:"📂 src/pipeline + src/edge — il loop e la radio", items:[
+        "<span class='f'>fusion_loop.py</span> <span class='s'>— §8, Algoritmo 1</span> · <code>fusion_tick</code> (raffina → massa → fonde → soglia → pubblica) avvolto da <code>FusionLoop</code> che implementa le politiche operative: perdita pacchetti, deriva orologio, latch isteresi + cooldown, suggerimento ri-assegnazione UAV.",
+        "<span class='f'>export_onnx.py / trt_quantize.py / mqtt_client.py</span> <span class='s'>— §7.1–7.3</span> · export opset 17, motore INT8 costruito solo sul Jetson con una lista di calibrazione proporzionale di 5.000 immagini, MQTT/TLS al budget di 8 kB."]},
+      {t:"📂 scripts + benchmark + tests — le prove", items:[
+        "<span class='f'>get_datasets.py · build_splits.py · harmonize_labels.py</span> <span class='s'>— §3</span> · acquisizione, split anti-leakage, unificazione della tassonomia.",
+        "<span class='f'>run_field_sim.py</span> <span class='s'>— §9</span> · replay: sequenze etichettate come flusso camera + una rampa IIoT sintetica che anticipa o segue l'innesco → metrica di orizzonte di rilevamento, chiaramente etichettata sintetica.",
+        "<span class='f'>benchmark/metrics.py · run_benchmark.py · ablation.py</span> <span class='s'>— §10–§11</span> · P/R/F1, mAP@.5 via val Ultralytics, FPR con denominatore esplicito, tracce di latenza grezze, IC bootstrap ≥1000 ricampionamenti, matrici di confusione per classe, e le quattro ablation della Tabella VI con IC sui delta.",
+        "<span class='f'>tests/</span> · 49 test inclusa l'asserzione anti-leakage e ogni politica di fusione."]}]},
+  res:{h:"<span class='tick'>07</span> · Cosa significano i numeri",
+    lead:"Obiettivi riportati dall'articolo vs ciò che questo repository calcola. Tutto ciò che è sintetico in questa build è etichettato sintetico — nessun prestito silenzioso di numeri pubblicati.",
+    head:["Metrica","Definizione","L'articolo riporta","Questo repo"],
+    rows:[
+      ["P / R / F1, mAP@.5","<span class='mono'>convenzione IoU 0.5, val() Ultralytics</span>","Tabella IV","calcolato per checkpoint + P/R/F1 a livello immagine con IC bootstrap + matrici di confusione per classe"],
+      ["FPR / 24 h","<span class='mono'>falsi allarmi ÷ finestre senza fuoco monitorate (denominatore loggato)</span>","&lt; 2% (numero finestre non specificato)","denominatore esplicito per progetto"],
+      ["Orizzonte di rilevamento","<span class='mono'>tempo_monitoraggio_tradizionale − tempo_allarme (per evento)</span>","<span class='mono'>86 s ± 14 s (N = 3!)</span>","il replay sul campo riporta media ± deviazione + IC, etichettato SINTETICO"],
+      ["Latenza forward","<span class='mono'>cattura → allarme pubblicato vs forward grezzo</span>","<span class='mono'>74 ms (RGB+LWIR) · 312 ms end-to-end</span>","tracce grezze per chiamata salvate (non solo media/p95)"],
+      ["Soglia d'allarme τ","<span class='mono'>m(F) fusa &gt; τ</span>","<span class='mono'>0.78 (il loro set di validazione)</span>","ricalibrata per ricerca su griglia: FPR min a richiamo ≥ target"],
+      ["Ablation","<span class='mono'>no-CBAM · concat-vs-transformer · solo-media-ponderata · solo-dempster</span>","Delta della Tabella VI, senza significatività","delta + IC bootstrap (la correzione)"]],
+    note:"Risultato di sanità dal replay sintetico di questa build: due modalità <i>concordi</i> a confidenza media si fondono oltre τ dove ciascuna da sola fallisce (amplificazione di Dempster), mentre una coppia in conflitto massimo viene disinnescata in una media ponderata invece di una divisione per ~0. È esattamente il ruolo della regola consapevole dei conflitti — ed è testata con unit test."},
+  run:{h:"<span class='tick'>08</span> · Esecuzione",
+    lead1:"Il runbook completo è nel README del repository. La demo da 5 minuti senza dataset:",
+    lead2:"Percorso dati reali (D-Fire prima — nessun muro di autenticazione):"},
+  footer:{title:"Cancelli di riproducibilità prima di chiamare qualcosa «riprodotto»:",
+    items:["partizioni esatte commesse (split_manifest.csv per dataset) · asserzione anti-leakage verde",
+           "etichette armonizzate <i>e verificate contro i veri file di etichette</i> · config di addestramento loggata per run",
+           "baseline riaddestrate con split/augmentation identici · IC + matrici di confusione riportate",
+           "tracce di latenza grezze salvate · politiche operative implementate e documentate",
+           "ogni <code>ASSUMPTION</code> sostituita con un vero valore giustificato prima di qualsiasi rivendicazione esterna"],
+    tagline:"FORFIRE-AI · explainer interattivo in un solo file · EN/FR/IT/AR · funziona offline (Titillium Web ricade sui font di sistema)"}
+}
+};
+
+let LANG = localStorage.getItem("ff_lang") || "en";
+if (!I18N[LANG]) LANG = "en";
+const T = () => I18N[LANG];
+const keyPath = (obj, path) => path.split(".").reduce((o,k)=>o&&o[k], obj);
+
+/* ==================================================================
+   Decisional tier — faithful JS port of src/decisional/evidential_fusion.py
+   ================================================================== */
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+function mass(pi,r){ pi=clamp(pi,0,1); r=clamp(r,0,1);
+  return {F:r*pi, N:r*(1-pi), T:1-r}; }
+function intersect(a,b){
+  const S={F:["F"],N:["N"],T:["F","N"]};
+  const inter=S[a].filter(x=>S[b].includes(x));
+  if(!inter.length) return null;
+  if(inter.length===2) return "T";
+  return inter[0];
+}
+function dempster(ma,mb){
+  let K=0; const c={F:0,N:0,T:0};
+  for(const ka of ["F","N","T"]) for(const kb of ["F","N","T"]){
+    const va=ma[ka], vb=mb[kb], t=intersect(ka,kb);
+    if(t===null) K+=va*vb; else c[t]+=va*vb;
+  }
+  const norm=1-K;
+  if(norm<=1e-9) return {m:weighted(ma,mb),K};
+  return {m:Object.fromEntries(Object.entries(c).map(([k,v])=>[k,v/norm])),K};
+}
+function weighted(ma,mb){ return {F:(ma.F+mb.F)/2, N:(ma.N+mb.N)/2, T:(ma.T+mb.T)/2}; }
+function divergence(ma,mb){ // Jousselme-style
+  const keys=["F","N","T"];
+  const J={"F, F":1,"N, N":1,"T, T":1,"F, N":0,"N, F":0,"F, T":.5,"T, F":.5,"N, T":.5,"T, N":.5};
+  const v=a=>keys.map(k=>a[k]);
+  const va=v(ma), vb=v(mb);
+  const num=va.reduce((s,xi,i)=>s+xi*vb.reduce((y,xj,j)=>y+xj*J[keys[i]+", "+keys[j]],0),0);
+  const da=va.reduce((s,xi,i)=>s+xi*va.reduce((y,xj,j)=>y+xj*J[keys[i]+", "+keys[j]],0),0);
+  const db=vb.reduce((s,xi,i)=>s+xi*vb.reduce((y,xj,j)=>y+xj*J[keys[i]+", "+keys[j]],0),0);
+  return 1 - num/(Math.sqrt(da*db)+1e-9);
+}
+function conflictAwareFold(masses,divThr){
+  let fused=masses[0]; const log=[];
+  for(let i=1;i<masses.length;i++){
+    const d=divergence(fused,masses[i]);
+    fused = (d>divThr) ? weighted(fused,masses[i]) : dempster(fused,masses[i]).m;
+    log.push({weighted:d>divThr, d});
+  }
+  return {fused,log};
+}
+
+/* ---------------- language switching ---------------- */
+function setLang(l){
+  if(!I18N[l]) return;
+  LANG = l;
+  localStorage.setItem("ff_lang", l);
+  applyLang();
+}
+function applyLang(){
+  const d = T();
+  document.documentElement.lang = LANG;
+  document.documentElement.dir = d.dir;
+  document.title = d.title;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const v = keyPath(d, el.dataset.i18n);
+    if (v !== undefined) el.innerHTML = v;
+  });
+  renderContrib(); renderTiers(); renderSteps(); renderDataCards();
+  renderTrees(); renderResults(); renderFooter();
+  updatePlayground(); updateGate();
+  document.querySelectorAll(".langs button").forEach(b=>
+    b.classList.toggle("on", b.dataset.lang===LANG));
+}
+
+/* ---------------- static-ish renderers ---------------- */
+function renderContrib(){
+  document.getElementById("contrib").innerHTML = T().contrib.map(c=>
+    `<div class="card ${c.c}"><b>${c.t}</b><p>${c.b}</p></div>`).join("");
+}
+let curTier = 0;
+function renderTiers(){
+  const host=document.getElementById("tiers");
+  host.innerHTML = T().arch.tiers.map((t,i)=>
+    `<div class="tier${i===curTier?" sel":""}" onclick="selectTier(${i})">
+       <div class="k">${t.k}</div><h3>${t.name}</h3><ul>${
+       t.items.map(([b,s])=>`<li><b>${b}</b> — ${s}</li>`).join("")}</ul></div>`).join("");
+  selectTier(curTier);
+}
+function selectTier(i){
+  curTier = i;
+  document.querySelectorAll(".tier").forEach((el,j)=>el.classList.toggle("sel",j===i));
+  document.getElementById("tier-detail").innerHTML=`<div class="card">${T().arch.tiers[i].detail}</div>`;
+}
+let curStep = 0;
+function renderSteps(){
+  const btns=document.getElementById("stepbtns");
+  btns.innerHTML = T().algo.steps.map((s,i)=>
+    `<button onclick="showStep(${i})" class="${i===curStep?"on":(i<curStep?"done":"")}">${i+1}. ${s.t}</button>`).join("");
+  showStep(curStep);
+}
+function showStep(i){
+  curStep=(i+T().algo.steps.length)%T().algo.steps.length;
+  const s=T().algo.steps[curStep];
+  document.getElementById("step-body").innerHTML=
+    `<h4>${(LANG==="ar"?"الخطوة ":"Step ")}${curStep+1}/${T().algo.steps.length} — ${s.t}</h4>${s.body}
+     <span class="file">${s.file}</span>`;
+  [...document.getElementById("stepbtns").children].forEach((b,j)=>{
+    b.className = j===curStep ? "on" : (j<curStep ? "done" : "");
+  });
+}
+function stepBy(d){ showStep(curStep+d); }
+function renderDataCards(){
+  document.getElementById("data-cards").innerHTML = T().data.cards.map(c=>
+    `<div class="card ds" style="border-top:4px solid ${c.col}"><h3>${c.t}</h3>
+     <div class="nums">${c.nums}</div><p style="font-size:.85rem;color:var(--dim)">${c.b}</p></div>`).join("");
+}
+function renderTrees(){
+  document.getElementById("trees").innerHTML = T().code.trees.map((tr,i)=>
+    `<details class="tree"${i===0?" open":""}><summary>${tr.t}</summary>
+     <div class="body">${tr.items.map(p=>`<p>${p}</p>`).join("")}</div></details>`).join("");
+}
+function renderResults(){
+  document.getElementById("res-head").innerHTML =
+    T().res.head.map(h=>`<th>${h}</th>`).join("");
+  document.getElementById("res-body").innerHTML =
+    T().res.rows.map(r=>`<tr>${r.map((c,j)=>`<td${j===1||j===2?" class='mono'":""}>${c}</td>`).join("")}</tr>`).join("");
+}
+function renderFooter(){
+  document.getElementById("footer-list").innerHTML =
+    T().footer.items.map(x=>`<li>${x}</li>`).join("");
+}
+
+/* ---------------- playground wiring ---------------- */
+const MODS=[["c","pi-c","r-c"],["s","pi-s","r-s"],["d","pi-d","r-d"]];
+function slider(id){ return parseFloat(document.getElementById(id).value); }
+function renderBars(el, title, m){
+  const pct=v=>(100*v).toFixed(1)+"%";
+  const cell=(cls,v,lab)=>`<div class="${cls}" style="width:${100*v}%; ${v<0.08?'color:transparent':''}">${v>0.12?lab+" "+pct(v):''}</div>`;
+  el.innerHTML=`<h4 style="font-size:.85rem;color:var(--dim)">${title}</h4>
+    <div class="massbar">${cell("mF",m.F,"m(F)")}${cell("mN",m.N,"m(¬F)")}${cell("mT",m.T,"m(Θ)")}</div>`;
+}
+function updatePlayground(){
+  const d=T();
+  for(const [,pi,r] of MODS){
+    document.getElementById("o-"+pi).textContent=slider(pi).toFixed(2);
+    document.getElementById("o-"+r).textContent=slider(r).toFixed(2);
+  }
+  document.getElementById("o-tau").textContent=slider("tau").toFixed(2);
+  document.getElementById("o-div").textContent=slider("div").toFixed(2);
+
+  const host=document.getElementById("mod-bars"); host.innerHTML="";
+  const masses=[];
+  for(const [name,pi,r] of MODS){
+    const m=mass(slider(pi), slider(r)); masses.push(m);
+    const div=document.createElement("div");
+    renderBars(div, d.play.names[name]+" — r="+slider(r).toFixed(2), m);
+    host.appendChild(div);
+  }
+  const {fused,log}=conflictAwareFold(masses, slider("div"));
+  renderBars(document.getElementById("fused-bar"), "", fused);   // title already in the static <h4>
+  document.getElementById("div-log").innerHTML = log.map(l=>
+    (l.weighted ? d.play.foldWeighted : d.play.foldDempster)
+      .replace("{d}", l.d.toFixed(3))).join("<br>");
+  const tau=slider("tau"), alarm=fused.F>tau;
+  const lamp=document.getElementById("alarm-lamp");
+  lamp.className="alarm "+(alarm?"on":"off");
+  document.getElementById("alarm-text").textContent =
+    (alarm ? d.play.alarmOn : d.play.alarmOff)
+      .replace("{f}", fused.F.toFixed(3)).replace("{t}", tau.toFixed(2));
+  document.getElementById("beliefs").textContent=
+    `Bel(F)=${fused.F.toFixed(3)}  Bel(¬F)=${fused.N.toFixed(3)}  Unc=${fused.T.toFixed(3)}`;
+}
+for(const [,pi,r] of MODS) for(const id of [pi,r])
+  document.getElementById(id).addEventListener("input",updatePlayground);
+for(const id of ["tau","div"]) document.getElementById(id).addEventListener("input",updatePlayground);
+function noiseTick(){
+  for(const [name,pi,r] of MODS){
+    const el=document.getElementById(pi);
+    el.value=clamp(parseFloat(el.value)+(Math.random()-0.5)*0.15, 0, 1);
+  }
+  updatePlayground();
+}
+
+/* ---------------- entropy gate heatmap ---------------- */
+function entropy(p){ p=clamp(p,1e-6,1-1e-6); return -(p*Math.log(p)+(1-p)*Math.log(1-p)); }
+function updateGate(){
+  const d=T();
+  const conf={c:slider("g-c"), s:slider("g-s"), d:slider("g-d")};
+  const order=["c","s","d"];
+  for(const k of order) document.getElementById("g-pi-"+k).textContent=conf[k].toFixed(2);
+  const H=Object.fromEntries(order.map(k=>[k,entropy(conf[k])]));
+  document.getElementById("entropies").innerHTML =
+    order.map(k=>`${k}: H(π)=${H[k].toFixed(3)} nats ${H[k]>0.6?d.gate.entUnc:d.gate.entConf}`).join("<br>");
+  const g=(hi,hj)=>1/(1+Math.exp(-(1.2*hi+1.2*hj-1.6)));
+  let html=`<div class="lbl">g_ij</div>`+order.map(k=>`<div class="lbl" style="justify-content:center">${k}</div>`).join("");
+  for(const i of order){
+    html+=`<div class="lbl">${i}</div>`;
+    for(const j of order){
+      const v=g(H[i],H[j]);
+      const col=`rgba(0,102,204,${(0.25+0.75*v).toFixed(2)})`;
+      html+=`<div class="cell" style="background:${col}">${v.toFixed(2)}</div>`;
+    }
+  }
+  document.getElementById("heat").innerHTML=html;
+}
+for(const id of ["g-c","g-s","g-d"]) document.getElementById(id).addEventListener("input",updateGate);
+
+applyLang();
+</script>
+</body>
+</html>

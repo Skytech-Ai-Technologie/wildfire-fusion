@@ -1,0 +1,33 @@
+{
+  "split": "test",
+  "images": 3264,
+  "instances": 3990,
+  "all": {
+    "precision": 0.7429,
+    "recall": 0.646,
+    "map50": 0.7135,
+    "map50_95": 0.3894
+  },
+  "per_class": {
+    "smoke": {
+      "precision": 0.7864,
+      "recall": 0.7202,
+      "f1": 0.7518,
+      "ap50": 0.7774,
+      "ap50_95": 0.4531
+    },
+    "fire": {
+      "precision": 0.6994,
+      "recall": 0.5718,
+      "f1": 0.6292,
+      "ap50": 0.6495,
+      "ap50_95": 0.3258
+    }
+  },
+  "speed_ms_per_image": {
+    "preprocess": 0.458,
+    "inference": 1.385,
+    "loss": 0.002,
+    "postprocess": 0.595
+  }
+}

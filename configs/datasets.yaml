@@ -1,0 +1,27 @@
+﻿# Â§3.6 â€” single 2-class taxonomy used everywhere downstream.
+# ASSUMPTION: exact per-dataset class indices â€” verify against each dataset's own README
+# and the ACTUAL .txt label files at download time (D-Fire's are commonly reported both
+# ways across forks; don't trust this table blindly). harmonize_labels.py fails loudly
+# if it sees class ids outside the mapping.
+
+classes: [smoke, fire]        # canonical order used by every model head
+
+mapping:
+  flame:  {Fire: fire}        # FLAME1 classification is Fire/Non-Fire only
+  dfire:  {0: smoke, 1: fire} # confirm against gaiasd README before training
+  figlib: {smoke: smoke}      # binary smoke/no-smoke
+
+sources:
+  flame:
+    page: "https://ieee-dataport.org/open-access/flame-3-radiometric-thermal-uav-imagery-wildfire-management"
+    kaggle_cv_subset: "brycehopkins/flame-3-computer-vision-subset-sycan-marsh"  # anonymous fetch, no IEEE account
+    paper: "https://arxiv.org/abs/2412.02831"
+  dfire:
+    repo: "https://github.com/gaiasd/DFireDataset"
+    roboflow_mirror: "d-fire-ehbj2"
+  figlib:
+    archive: "http://hpwren.ucsd.edu/HPWREN-FIgLib/"
+    image_base: "https://cdn.hpwren.ucsd.edu/HPWREN-FIgLib-Data/"
+    official_splits: "https://gitlab.nrp-nautilus.io/-/snippets/63"
+    paper: "https://www.mdpi.com/2072-4292/14/4/1007"
+    bboxes_alternative: "https://github.com/Cyebukayire/wildfire-smoke-dataset"  # AI For Mankind BBAWS v2.0

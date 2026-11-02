@@ -1,0 +1,5 @@
+variant,mean_horizon_s,delta_vs_full_s,delta_ci
+full,-55.666666666666664,0.0,"{""mean"": -55.666666666666664, ""lo"": -57.0, ""hi"": -55.0, ""n"": 3}"
+concat_transformer,,,
+weighted_avg_only,,,
+dempster_only,-55.666666666666664,0.0,"{""mean"": 0.0, ""lo"": 0.0, ""hi"": 0.0, ""n"": 3}"

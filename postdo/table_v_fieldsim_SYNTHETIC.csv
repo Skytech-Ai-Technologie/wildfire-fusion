@@ -1,0 +1,5 @@
+config,n_events,alarm_rate,detection_horizon_mean_s,horizon_ci
+ptz_only,3,0.0,,
+plus_lwir,3,1.0,-60.0,"{""mean"": -60.0, ""lo"": -63.0, ""hi"": -58.0, ""n"": 3}"
+plus_iiot,3,1.0,-55.666666666666664,"{""mean"": -55.666666666666664, ""lo"": -57.0, ""hi"": -55.0, ""n"": 3}"
+iiot_only,3,0.0,,

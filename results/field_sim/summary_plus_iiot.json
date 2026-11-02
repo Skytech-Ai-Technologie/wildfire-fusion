@@ -1,0 +1,13 @@
+{
+  "config": "plus_iiot",
+  "modalities": [
+    "c",
+    "d",
+    "s"
+  ],
+  "n_events": 3,
+  "detection_horizon_mean_s": -55.666666666666664,
+  "detection_horizon_std_s": 0.9428090415820634,
+  "alarm_rate": 1.0,
+  "SYNTHETIC_LABEL": "synthetic replay per spec \u00a79 \u2014 NOT a real field trial; paper reports 86s \u00b1 14s across only 3 events (do not oversell N=3)"
+}

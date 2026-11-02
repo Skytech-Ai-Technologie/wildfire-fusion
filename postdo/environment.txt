@@ -1,0 +1,8 @@
+python 3.11.9
+torch 2.14.1+cu130
+torchvision 0.29.1+cu130
+ultralytics 8.4.170
+numpy 2.3.5
+os Windows-10-10.0.26200-SP0
+gpu NVIDIA GeForce RTX 5070 Laptop GPU
+cuda 13.0

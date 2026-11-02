@@ -1,0 +1,11 @@
+SYNTHETIC: false
+T: 32
+arch: ContextualEncoder
+d_model: 256
+dropout: 0.1
+epochs: 30
+in_dim: 256
+lr: 0.0005
+mode: runs\emb\windows.npz
+n_heads: 8
+n_layers: 4

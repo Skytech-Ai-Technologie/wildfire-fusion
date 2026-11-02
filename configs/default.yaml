@@ -1,0 +1,59 @@
+# Multimodal Wildfire Early-Warning System — global defaults (spec §4.3, §5.1, §6, §8)
+# Every value marked ASSUMPTION is a labeled default filling a paper gap; swap for real
+# numbers once you have them and do not silently keep them for a paper submission.
+
+classes: [smoke, fire]        # canonical class order used by every model head (§3.6)
+imgsz: 640
+seed: 42
+
+perceptual_training:          # ASSUMPTION block — logged per run to runs/<exp>/train_config.yaml
+  optimizer: AdamW            # ASSUMPTION — Ultralytics default for YOLOv8; log & justify
+  lr0: 0.001
+  lr_schedule: cosine
+  epochs: 150
+  batch_size: 16              # reduce if GPU memory-bound; note the value you actually used
+  num_workers: 4              # safe since the uint8 pipeline (workers ~3 GB each) and
+                              # transient val workers never coexist with train workers
+  seed: 42
+  augmentation:               # ASSUMPTION — Ultralytics defaults, tuned lightly for smoke/haze
+    hsv_h: 0.015
+    hsv_s: 0.5                # lower saturation jitter than default (smoke color is delicate)
+    hsv_v: 0.4
+    mosaic: 0.5               # reduced from 1.0 — mosaic can shred small early-smoke plumes
+    flipud: 0.0
+    fliplr: 0.5
+    degrees: 5.0
+    translate: 0.1
+    scale: 0.3
+
+contextual:
+  d_model: 256                # ASSUMPTION — Jetson Orin Nano-feasible starting point, not paper fidelity
+  n_heads: 8                  # ASSUMPTION
+  n_layers: 4                 # 4 layers per the paper
+  dropout: 0.1                # ASSUMPTION
+  temporal_window: 32         # frames, per paper
+  lr: 5.0e-4                  # ASSUMPTION (paper gap: training objective unspecified)
+  epochs: 30
+  batch_size: 8
+  early_stopping_patience: 5
+
+decisional:
+  divergence_threshold: 0.3   # ASSUMPTION — [INFORMATION REQUIRED] in source; tune on val set
+  fire_alarm_threshold: 0.78  # τ per paper — calibrated for FPR < 2% on THEIR val set.
+                              # RECALIBRATE on your own val set (calibrate_decisional.py);
+                              # it is region/sensor-layout/prior-dependent per the source.
+  reliability:                # ASSUMPTION fallback — overwritten by configs/decisional_calibration.yaml
+    c: 0.80                   # r_c — PTZ RGB camera
+    d: 0.80                   # r_d — LWIR / drone stream
+    s: 0.60                   # r_s — IIoT sensor node
+
+operational:                  # §8 — explicitly-unspecified policies, documented defaults
+  timestamp_sync_tolerance_s: 2.0        # ASSUMPTION: max clock skew tolerated across sensors
+  iiot_alignment_window_s: 30.0          # §4.4: nearest-reading tolerance (±30s)
+  beat_period_s: 60.0                    # expected sensor heartbeat interval
+  packet_loss_policy: "mark_modality_inactive_after_2_missed_beats"
+  uav_unavailable_policy: "fuse_on_camera_and_iiot_only"
+  sensor_dropout_policy: "exclude_from_reliability_normalization_until_reconnect"
+  alarm_hysteresis:
+    consecutive_ticks_required: 2        # ASSUMPTION: require 2 consecutive alarm ticks
+    cooldown_s: 300                      # before re-arming after a human clears the alarm

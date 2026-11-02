@@ -1,0 +1,51 @@
+annotated_file,source_image,detections(conf>=0.25)
+fp_01_WEB10378_conf0.82.jpg,WEB10378.jpg,smoke:0.82; fire:0.26
+fp_02_WEB02630_conf0.79.jpg,WEB02630.jpg,fire:0.79
+fp_03_WEB00252_conf0.76.jpg,WEB00252.jpg,smoke:0.76
+fp_04_AoF03688_conf0.72.jpg,AoF03688.jpg,smoke:0.72
+fp_05_WEB03068_conf0.72.jpg,WEB03068.jpg,fire:0.72
+fp_06_PublicDataset00951_conf0.71.jpg,PublicDataset00951.jpg,smoke:0.71
+fp_07_WEB02774_conf0.68.jpg,WEB02774.jpg,smoke:0.68; smoke:0.62; smoke:0.59
+fp_08_AoF03528_conf0.62.jpg,AoF03528.jpg,smoke:0.62
+fp_09_AoF03406_conf0.59.jpg,AoF03406.jpg,fire:0.59
+fp_10_AoF03432_conf0.58.jpg,AoF03432.jpg,smoke:0.58
+fp_11_WEB02636_conf0.58.jpg,WEB02636.jpg,smoke:0.58
+fp_12_WEB10210_conf0.56.jpg,WEB10210.jpg,fire:0.56; fire:0.42
+fp_13_AoF03433_conf0.55.jpg,AoF03433.jpg,smoke:0.55
+fp_14_AoF03439_conf0.51.jpg,AoF03439.jpg,smoke:0.51
+fp_15_AoF03689_conf0.49.jpg,AoF03689.jpg,smoke:0.49
+fp_16_WEB03061_conf0.47.jpg,WEB03061.jpg,smoke:0.47
+fp_17_AoF03434_conf0.46.jpg,AoF03434.jpg,smoke:0.46
+fp_18_WEB10398_conf0.44.jpg,WEB10398.jpg,smoke:0.44
+fp_19_AoF03438_conf0.44.jpg,AoF03438.jpg,smoke:0.44
+fp_20_AoF07617_conf0.43.jpg,AoF07617.jpg,smoke:0.43
+fp_21_AoF07622_conf0.43.jpg,AoF07622.jpg,smoke:0.43
+fp_22_WEB02576_conf0.42.jpg,WEB02576.jpg,fire:0.42
+fp_23_AoF06954_conf0.41.jpg,AoF06954.jpg,smoke:0.41
+fp_24_AoF03393_conf0.41.jpg,AoF03393.jpg,fire:0.41
+fp_25_WEB10220_conf0.41.jpg,WEB10220.jpg,smoke:0.41
+fp_26_WEB00240_conf0.40.jpg,WEB00240.jpg,smoke:0.40; fire:0.38
+fp_27_WEB09933_conf0.40.jpg,WEB09933.jpg,fire:0.40
+fp_28_AoF03394_conf0.39.jpg,AoF03394.jpg,fire:0.39
+fp_29_WEB02566_conf0.37.jpg,WEB02566.jpg,smoke:0.37
+fp_30_WEB10209_conf0.36.jpg,WEB10209.jpg,smoke:0.36
+fp_31_AoF07623_conf0.34.jpg,AoF07623.jpg,smoke:0.34
+fp_32_AoF03397_conf0.34.jpg,AoF03397.jpg,fire:0.34
+fp_33_AoF07157_conf0.33.jpg,AoF07157.jpg,smoke:0.33
+fp_34_WEB00239_conf0.31.jpg,WEB00239.jpg,fire:0.31
+fp_35_PublicDataset00952_conf0.30.jpg,PublicDataset00952.jpg,fire:0.30
+fp_36_AoF06955_conf0.30.jpg,AoF06955.jpg,smoke:0.30
+fp_37_AoF03396_conf0.29.jpg,AoF03396.jpg,fire:0.29
+fp_38_AoF03436_conf0.29.jpg,AoF03436.jpg,smoke:0.29
+fp_39_AoF07158_conf0.29.jpg,AoF07158.jpg,smoke:0.29
+fp_40_WEB02506_conf0.28.jpg,WEB02506.jpg,smoke:0.28
+fp_41_AoF03693_conf0.28.jpg,AoF03693.jpg,fire:0.28
+fp_42_AoF07136_conf0.28.jpg,AoF07136.jpg,smoke:0.28
+fp_43_AoF03437_conf0.27.jpg,AoF03437.jpg,smoke:0.27
+fp_44_AoF03392_conf0.27.jpg,AoF03392.jpg,fire:0.27
+fp_45_WEB10379_conf0.26.jpg,WEB10379.jpg,smoke:0.26
+fp_46_AoF01843_conf0.26.jpg,AoF01843.jpg,smoke:0.26
+fp_47_AoF03398_conf0.26.jpg,AoF03398.jpg,fire:0.26
+fp_48_WEB02755_conf0.26.jpg,WEB02755.jpg,smoke:0.26
+fp_49_AoF01845_conf0.25.jpg,AoF01845.jpg,smoke:0.25
+fp_50_AoF03431_conf0.25.jpg,AoF03431.jpg,smoke:0.25

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORFIRE-AI — The simulation, explained for beginners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#0066cc; --blue-dark:#1061a6; --band:#1373ba; --band-deep:#0d4f8b;
+    --green:#008055; --lime:#8dc63f; --red:#cc334d;
+    --text:#1a1a1a; --dim:#5d7083;
+    --bg:#ffffff; --bg-soft:#f5f7fa; --line:#d8d9da; --line-blue:#c9def0;
+    --pastel-green:#e8f3da; --pastel-orange:#fdeada; --pastel-purple:#ece4f7; --pastel-blue:#e3eef9;
+    --sans:'Titillium Web','Segoe UI',Tahoma,sans-serif;
+    --mono:Consolas,'Cascadia Code',Menlo,monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:var(--bg); color:var(--text); font:17px/1.65 var(--sans)}
+  .topbar{background:var(--band); color:#fff; font-size:.8rem; padding:5px 18px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px}
+  .topbar a{color:#fff; text-decoration:none; font-weight:700}
+  .wrap{max-width:900px; margin:0 auto; padding:0 22px}
+  header.hero{background:linear-gradient(135deg,var(--band-deep),var(--band)); color:#fff; padding:46px 0 40px}
+  header.hero h1{font-size:2rem; font-weight:900; line-height:1.2}
+  header.hero p{margin-top:10px; max-width:760px; color:#dbeafd}
+  nav{position:sticky; top:0; z-index:5; background:#cfe0ed; border-bottom:1px solid var(--line);
+    padding:0 12px; display:flex; gap:2px; flex-wrap:wrap}
+  nav a{color:var(--blue-dark); text-decoration:none; padding:9px 12px; font-weight:600; font-size:.9rem}
+  nav a:hover{color:var(--band-deep); border-bottom:3px solid var(--band)}
+  section{padding:44px 0; border-top:1px solid var(--line)}
+  section.alt{background:var(--bg-soft)}
+  h2{font-size:1.5rem; color:var(--blue-dark); margin-bottom:14px}
+  h3{font-size:1.08rem; margin:18px 0 6px; color:var(--band-deep)}
+  p{margin-bottom:12px}
+  .say{background:var(--pastel-blue); border-left:4px solid var(--band); border-radius:0 10px 10px 0;
+       padding:12px 16px; margin:14px 0; font-style:italic}
+  .card{background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:12px 0}
+  .card.green{background:var(--pastel-green)} .card.orange{background:var(--pastel-orange)}
+  .card.purple{background:var(--pastel-purple)}
+  .card b.t{display:block; color:var(--band-deep); margin-bottom:4px}
+  .grid{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin:14px 0}
+  code{font-family:var(--mono); background:var(--pastel-blue); padding:1px 6px; border-radius:4px;
+       font-size:.86em; color:#0b5394}
+  pre{background:#f7f9fc; border:1px solid var(--line-blue); border-radius:10px; padding:14px 16px;
+      overflow-x:auto; font-family:var(--mono); font-size:.85rem; line-height:1.6; color:#24384c}
+  table{border-collapse:collapse; width:100%; margin:12px 0; font-size:.95rem}
+  th,td{border:1px solid var(--line); padding:8px 12px; text-align:left; vertical-align:top}
+  th{background:var(--pastel-blue); color:var(--band-deep)}
+  .num{display:inline-block; background:var(--green); color:#fff; font-weight:800; border-radius:50%;
+       width:26px; height:26px; text-align:center; line-height:26px; margin-right:8px; font-size:.9rem}
+  footer{background:var(--band-deep); color:#dbeafd; padding:26px 0; font-size:.9rem}
+  footer a{color:#fff}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span><b>FORFIRE-AI</b> · beginner guide</span>
+  <a href="index.html">← back to the full explainer</a>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>The wildfire alarm, explained simply</h1>
+    <p>What this project builds, how the simulation shows it working, and the eight things
+       we did differently. No prior knowledge needed — if you know what a smoke detector
+       is, you can read this page.</p>
+  </div>
+</header>
+
+<nav>
+  <a href="#story">The story</a>
+  <a href="#tiers">Three experts</a>
+  <a href="#sim">Watch the simulation</a>
+  <a href="#contrib">What we contribute</a>
+  <a href="#try">Try it yourself</a>
+  <a href="#words">Small dictionary</a>
+</nav>
+
+<section id="story">
+  <div class="wrap">
+    <h2>The story: a fire lookout that never sleeps</h2>
+    <p>Imagine a watchtower guarding a forest. A human watcher gets tired, misses things
+       at night, and panics or gets bored. We want a <b>machine watcher</b> instead.
+       The machine gets information from:</p>
+    <p>• a <b>camera that sees normal colors</b> (like your eyes — good in daylight)<br>
+       • a <b>camera that sees heat</b> (called LWIR or thermal — works at night and
+       through light smoke)<br>
+       • cheap <b>weather sensors</b> on the ground that measure heat, humidity, smoke
+       particles and gases (called IIoT — “Industrial Internet of Things”)</p>
+    <p>The goal: shout <b>“FIRE!”</b> as early as possible — but <b>without crying wolf</b>.
+       A false alarm costs money and trust; a missed alarm costs the forest. The whole
+       project is about balancing those two mistakes.</p>
+    <div class="say">A smoke detector at home beeps when one sensor triggers. In a forest,
+    one trigger is not enough — wind dust looks like smoke, a hot rock looks like fire.
+    That is why we need several “eyes” and a smart way to combine them.</div>
+  </div>
+</section>
+
+<section id="tiers" class="alt">
+  <div class="wrap">
+    <h2>Three experts work together</h2>
+    <p>The system is a small team of three “experts”, each checking the other's work:</p>
+    <div class="grid">
+      <div class="card green"><b class="t">1 · The Eyes (perception)</b>
+        Two neural networks look at the two cameras, plus a simpler “sniffer” that scores
+        the weather sensors. Each expert says: <i>“I am 62% sure I see something.”</i>
+        The heat camera and the color camera each have their own attention module
+        (called CBAM) so they focus on the important part of the picture.</div>
+      <div class="card purple"><b class="t">2 · The Brain (context)</b>
+        Confidence numbers jump around: one blurry frame can scare the Eyes. The Brain
+        looks at the last 32 moments <i>as a story</i> and asks: is this confidence
+        growing like a real fire, or just noise? Uncertain experts get <i>turned down</i>
+        (this is the “entropy gate”) before they can mislead anyone.</div>
+      <div class="card orange"><b class="t">3 · The Judge (decision)</b>
+        The Judge combines all opinions using a mathematical voting rule
+        (Dempster–Shafer). Clever part: when two experts <i>strongly disagree</i>,
+        instead of averaging blindly it becomes extra cautious. Only when the combined
+        belief passes a threshold τ does the alarm actually fire — and even then, it
+        must repeat on the next tick before it is confirmed.</div>
+    </div>
+    <p>After the Judge, a “duty officer” program applies the safety rules: require the
+       alarm twice in a row, latch it until a human acknowledges, then cool down before
+       re-arming. The alarm travels as a tiny message (&lt; 8 kB) over a radio-style
+       channel (MQTT) to the firefighters' system.</p>
+  </div>
+</section>
+
+<section id="sim">
+  <div class="wrap">
+    <h2>Watch the simulation — the system thinking out loud</h2>
+    <p>You do not need any dataset or hardware to see this work. The project ships a
+       <b>simulation</b> that replays a fire day minute by minute: three fake sensors
+       slowly notice a fire, the three experts process every tick, and the alarm fires
+       at the moment the evidence becomes strong. The output is a timeline you can open
+       in any spreadsheet:</p>
+    <pre>python scripts\run_field_sim.py --events 3 --config plus_iiot</pre>
+    <p>Two files appear in <code>results\field_sim\</code>: a timeline (every tick, every
+       confidence, every decision) and a summary. One summary number to love:
+       the <b>detection horizon</b> — how many seconds <i>before</i> a plain camera would
+       have shouted, our combined system already shouted. Negative = earlier = better.</p>
+    <div class="say">Think of the simulation as a flight simulator for the alarm system:
+    we can test the “duty officer” rules — alarms, silences, lost sensors — safely,
+    thousands of times, before trusting real hardware.</div>
+    <p>There are four configurations to compare: camera only, camera + heat, camera +
+       weather sensors, and weather sensors alone. Running all four shows <i>why</i>
+       each sensor is worth having — that comparison is one of the project's tables.</p>
+  </div>
+</section>
+
+<section id="contrib" class="alt">
+  <div class="wrap">
+    <h2>What we contribute — the eight things, in plain words</h2>
+    <p class="say">The architecture (the “three experts” idea) comes from a research
+    paper. Our scientific contribution is making it real, correct, testable and
+    honest — here is exactly what we added.</p>
+
+    <div class="card"><span class="num">1</span><b>We built the whole machine — and wrote down every guess.</b>
+      The paper skips details (how to train the Brain, how deep to fuse the cameras,
+      what to do when a sensor dies). We filled each gap and <b>labeled it openly</b> as
+      an assumption, so anyone can swap in better values later.</div>
+
+    <div class="card"><span class="num">2</span><b>We made the exam fair (no cheating).</b>
+      Neural networks are graded on photos they have never seen. We discovered that the
+      standard way of splitting D-Fire puts <i>nearly identical video frames</i> in both
+      the study set and the exam — like seeing exam questions the night before. The
+      score looks great but is a lie. We regrouped the photos so the exam is honest.</div>
+
+    <div class="card"><span class="num">3</span><b>We grade with error bars.</b>
+      Instead of saying “73%”, we say “73%, and with high confidence it is between 71%
+      and 75%”. We also count false alarms against an openly defined denominator and
+      save every raw timing measurement, so nothing is hidden.</div>
+
+    <div class="card"><span class="num">4</span><b>We counted everything before trusting it.</b>
+      The D-Fire dataset is famous for being labeled inconsistently (is 0 “smoke” or
+      “fire”?). Our download script writes a provenance receipt and automatically checks
+      the label counts against the published numbers — they matched exactly.</div>
+
+    <div class="card"><span class="num">5</span><b>We wrote the duty-officer safety rules.</b>
+      The paper never says when an alarm may repeat, or how long to wait after a human
+      clears it. We specified those rules, tested them, and even found and fixed a
+      subtle hole (an alarm sneaking in during “cooldown” could re-arm itself with a
+      single tick).</div>
+
+    <div class="card"><span class="num">6</span><b>The Judge calibrates itself — and refuses nonsense.</b>
+      A script searches for the best voting settings on real validation data. If you
+      accidentally feed it data without labels, it <b>refuses to run</b> instead of
+      quietly producing garbage that would later override the safety threshold.</div>
+
+    <div class="card"><span class="num">7</span><b>It is built for small hardware.</b>
+      The models export to ONNX (a portable format) and are compressed to 8-bit
+      integers for Jetson-style devices. Alarm messages are hard-capped at 8 kB —
+      small enough for weak forest radio links.</div>
+
+    <div class="card"><span class="num">8</span><b>Everything is tested, twice.</b>
+      55 automated tests guard the tricky math and the safety rules, and this very page
+      has a big brother: the <a href="index.html">interactive explainer</a>, where you
+      can drag sliders and watch the fusion math react, completely offline.</div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap">
+    <h2>Try it yourself — three commands, no data needed</h2>
+    <pre>
+:: 1. watch the alarm system think (5 seconds)
+python scripts\run_field_sim.py --events 3 --config plus_iiot
+
+:: 2. run all 55 safety and math tests
+pytest -v
+
+:: 3. open the interactive explainer (double-click)
+docs\index.html</pre>
+    <p>Want the real thing? The <a href="index.html#run">main page</a> shows how to
+       download the datasets and train the models — that part needs a GPU (a few hours)
+       or patience on a laptop.</p>
+  </div>
+</section>
+
+<section id="words" class="alt">
+  <div class="wrap">
+    <h2>Small dictionary</h2>
+    <table>
+      <tr><th>Word</th><th>Plain meaning</th></tr>
+      <tr><td>RGB / LWIR</td><td>Normal-color camera / heat camera (sees warmth, works at night)</td></tr>
+      <tr><td>IIoT node</td><td>A cheap ground sensor box: temperature, humidity, smoke particles, gas</td></tr>
+      <tr><td>YOLOv8n</td><td>A small, fast neural network that draws boxes around smoke or fire in a photo</td></tr>
+      <tr><td>CBAM</td><td>An “attention” add-on: teaches the network which part of the picture matters</td></tr>
+      <tr><td>Transformer</td><td>A network that reads a sequence (like 32 moments in time) as one story</td></tr>
+      <tr><td>Entropy gate</td><td>A volume knob: when an expert is confused, its opinion is turned down</td></tr>
+      <tr><td>Dempster–Shafer</td><td>A voting rule for evidence, with a special “I'm not sure” option; it gets cautious when experts disagree</td></tr>
+      <tr><td>τ (tau)</td><td>The alarm threshold: combined belief must beat it for the siren to fire</td></tr>
+      <tr><td>mAP</td><td>Exam score for detectors: are the boxes in the right places?</td></tr>
+      <tr><td>Epoch</td><td>One full pass of the study material during training</td></tr>
+      <tr><td>Checkpoint</td><td>A save-game file of the model, so training can stop and resume</td></tr>
+      <tr><td>False alarm (FPR)</td><td>Crying wolf: alarm raised, no fire. Kept low on purpose</td></tr>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>FORFIRE-AI</b> — Multimodal Wildfire Early-Warning System · beginner guide
+    <p style="margin-top:8px">Continue with the <a href="index.html">full interactive explainer</a>
+    (architecture, Algorithm 1, live fusion playground) or the
+    <a href="../contribution.md">formal contribution statement</a>.</p>
+  </div>
+</footer>
+
+</body>
+</html>

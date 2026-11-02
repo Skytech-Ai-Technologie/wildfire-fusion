@@ -1,0 +1,13 @@
+{
+  "method": "32-frame numeric-stem bucketing (no source-video ids published); each group assigned to exactly one of train/val/test",
+  "event_groups": 673,
+  "frames": 21527,
+  "groups_straddling_splits": 0,
+  "examples_straddling": [],
+  "per_split_groups": {
+    "train": 471,
+    "val": 100,
+    "test": 102
+  },
+  "assertion": "ZERO overlap \u2014 passed"
+}

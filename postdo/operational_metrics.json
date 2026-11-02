@@ -1,0 +1,40 @@
+{
+  "detection_latency_ms": {
+    "mean": 11.7,
+    "p95": 17.1,
+    "n": 50,
+    "hardware": "RTX 5070 Laptop GPU, FP32, 640 px, includes pre+post"
+  },
+  "recall_at_image_fp_budget": {
+    "fp_rate<=0.5%": {
+      "conf_threshold": 0.4,
+      "fire_recall_box": 0.5278,
+      "fire_precision_box": 0.7557,
+      "smoke_recall_box": 0.6958,
+      "image_fp_rate_fire": 0.0047,
+      "background_images_with_fire_det": 7,
+      "n_background": 1504
+    },
+    "fp_rate<=1.0%": {
+      "conf_threshold": 0.3,
+      "fire_recall_box": 0.5919,
+      "fire_precision_box": 0.6738,
+      "smoke_recall_box": 0.7331,
+      "image_fp_rate_fire": 0.008,
+      "background_images_with_fire_det": 12,
+      "n_background": 1504
+    },
+    "fp_rate<=2.0%": {
+      "conf_threshold": 0.15,
+      "fire_recall_box": 0.698,
+      "fire_precision_box": 0.5113,
+      "smoke_recall_box": 0.7812,
+      "image_fp_rate_fire": 0.018,
+      "background_images_with_fire_det": 27,
+      "n_background": 1504
+    }
+  },
+  "background_scenes": 1504,
+  "background_with_fire_det_at_conf_0.25": 50,
+  "false_alarms_per_hour": "not measurable \u2014 requires timestamped negative video; see table_v_fieldsim_SYNTHETIC.csv for the replayed per-window FPR (labeled synthetic)"
+}

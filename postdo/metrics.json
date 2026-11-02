@@ -1,0 +1,83 @@
+{
+  "model": "YOLOv8n single-stream RGB (Ultralytics), D-Fire detection",
+  "checkpoint": "runs/single_rgb_dfire_1791130238/weights/best.pt",
+  "training": {
+    "epochs": 150,
+    "optimizer": "AdamW",
+    "lr0": 0.001,
+    "schedule": "cosine",
+    "batch": 16,
+    "imgsz": 640,
+    "split": "leakage-safe 32-frame group split (673 groups)",
+    "best_epoch": 71,
+    "best_val_map50": 0.7231,
+    "final_epoch": 150,
+    "final_val_map50": 0.7158
+  },
+  "test_detection_metrics": {
+    "map50": 0.7190110602346944,
+    "map50_95": 0.38506392552755364,
+    "precision": 0.7391206105347626,
+    "recall": 0.6644253685534618,
+    "f1": 0.6997853884046505
+  },
+  "test_per_class": {
+    "smoke": {
+      "precision": 0.7864,
+      "recall": 0.7202,
+      "f1": 0.7518,
+      "ap50": 0.7774,
+      "ap50_95": 0.4531
+    },
+    "fire": {
+      "precision": 0.6994,
+      "recall": 0.5718,
+      "f1": 0.6292,
+      "ap50": 0.6495,
+      "ap50_95": 0.3258
+    }
+  },
+  "test_image_level": {
+    "tp": 1664,
+    "fp": 50,
+    "fn": 96,
+    "precision": 0.970828471411902,
+    "recall": 0.9454545454545454,
+    "f1": 0.9579735175590097
+  },
+  "test_image_level_accuracy_ci": {
+    "mean": 0.9552696078431373,
+    "lo": 0.9482230392156863,
+    "hi": 0.9623161764705882,
+    "n": 3264
+  },
+  "test_image_level_confusion_rows_true_cols_pred_0none_1pos": [
+    [
+      1454,
+      50
+    ],
+    [
+      96,
+      1664
+    ]
+  ],
+  "latency_ms": {
+    "mean": 11.670898001175374,
+    "p95": 17.050800030119717
+  },
+  "contextual_tier": {
+    "trained_on": "15,063 real frame embeddings -> 32-frame leakage-safe windows",
+    "best_val_acc": 0.9362,
+    "best_epoch": 20
+  },
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+    "torch": "2.14.1+cu130",
+    "python": "3.11.9"
+  },
+  "integrity": {
+    "image_level_and_detection": "measured on held-out test split",
+    "tables_v_vi": "SYNTHETIC field-sim replay (labeled as such)",
+    "jetson_int8": "not measured \u2014 no Jetson device available"
+  }
+}

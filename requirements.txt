@@ -1,0 +1,23 @@
+# Spec §2 — the paper reports PyTorch 2.3, ONNX 1.16, TensorRT 10.0, Ultralytics 8.2 (Table III).
+# Pin to those versions if you need to reproduce the published numbers exactly.
+# TensorRT is NOT pip-installable on x86 — it ships with the NVIDIA JetPack image on-device.
+ultralytics>=8.2,<9
+torch>=2.3
+torchvision
+onnx==1.16.*
+onnxruntime-gpu
+scikit-learn
+pandas
+numpy
+opencv-python-headless
+paho-mqtt
+pyyaml
+tqdm
+albumentations
+matplotlib
+seaborn
+kagglehub
+roboflow
+gdown
+pytest
+yt-dlp                            # live platform: resolves a YouTube URL to a stream

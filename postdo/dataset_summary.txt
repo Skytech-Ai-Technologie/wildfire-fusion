@@ -1,0 +1,4 @@
+D-Fire: 21,527 images — test 3264, train 15063, val 3200; 673 event groups (zero split straddling)
+FLAME 3 CV subset: 2,214 RGB+thermal images (fire 1,866 / none 348)
+FIgLib: 732 images across 10 official fire sequences
+Provenance: data/<name>/.done markers; class histogram verified against published counts (smoke 11,865 / fire 14,692)

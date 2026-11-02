@@ -1,0 +1,21 @@
+% Generated from results\table_iv.csv — real measured values, do not hand-edit
+\begin{table}[t]
+\centering
+\caption{Detection and image-level performance on the D-Fire test split
+(3{,}264 images, 3{,}990 instances; leakage-safe 32-frame group split).}
+\label{tab:dfire-test}
+\begin{tabular}{lcc}
+\hline
+Metric & Box-level & Image-level \\
+\hline
+Precision & 0.739 & 0.971 \\
+Recall    & 0.664 & 0.945 \\
+F1        & 0.700 & 0.958 \\
+mAP@0.5   & 0.719 & -- \\
+mAP@0.5:0.95 & 0.385 & -- \\
+Accuracy (95% bootstrap CI) & -- & 0.955 [0.948, 0.962] \\
+\hline
+\multicolumn{3}{l}{\footnotesize Latency: 11.7 ms mean / 17.1 ms p95 per image
+(RTX 5070 Laptop, FP32, 640 px). Jetson INT8: not measured.}
+\end{tabular}
+\end{table}
