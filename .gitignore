@@ -1,5 +1,6 @@
 # --- Datasets: NOT shipped (see DATASETS.md; fetch with scripts/get_datasets.py) ---
-data/
+data/*
+!data/README.md
 
 # --- Training runs / checkpoints: regenerate by training (README §2.3) ---
 runs/
